@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,16 +33,20 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorCode = "";
     });
 
+    var auth = Provider.of(context).auth;
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+      await auth.loginEmail(_emailController.text, _passwordController.text);
       navigateHome();
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorCode = e.code;
-      });
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        setState(() {
+          _errorCode = e.message ?? "An error occurred. Please try again.";
+        });
+      } else {
+        setState(() {
+          _errorCode = "An unexpected error occurred.";
+        });
+      }
     }
 
     setState(() {
@@ -51,10 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Login'), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -75,13 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               _errorCode != ""
                   ? Column(
-                  children: [Text(_errorCode), const SizedBox(height: 24)])
+                    children: [Text(_errorCode), const SizedBox(height: 24)],
+                  )
                   : const SizedBox(height: 0),
               OutlinedButton(
                 onPressed: signIn,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Login'),
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Login'),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -90,9 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: navigateRegister,
                     child: const Text('Register'),
-                  )
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
