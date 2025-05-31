@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
-import 'package:fp_kelompok_1_ppb_c/widgets/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,9 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorCode = "";
     });
 
-    var auth = Provider.of(context).auth;
     try {
-      await auth.loginEmail(_emailController.text, _passwordController.text);
+      await AuthService.instance.loginEmail(_emailController.text, _passwordController.text);
       navigateHome();
     } catch (e) {
       if (e is FirebaseAuthException) {

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/widgets/provider.dart';
+import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -33,9 +33,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _errorCode = "";
     });
 
-    var auth = Provider.of(context).auth;
     try {
-      await auth.registerEmail(
+      await AuthService.instance.registerEmail(
         _emailController.text,
         _passwordController.text,
         _usernameController.text,

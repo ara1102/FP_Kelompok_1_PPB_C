@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_card.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_list.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -8,13 +11,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   int _selectedIndex = 0;
 
   static final List<Widget> _pages = <Widget>[
     Center(child: Text('Personal Chat', style: TextStyle(fontSize: 24))),
     Center(child: Text('Group Chat', style: TextStyle(fontSize: 24))),
     Center(child: Text('Gemini', style: TextStyle(fontSize: 24))),
+    ContactWidget(),
     Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
   ];
 
@@ -25,31 +28,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List<BottomNavigationBarItem> _navItems = const [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.person),
-      label: 'Personal',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.group),
-      label: 'Group',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.auto_awesome),
-      label: 'Gemini',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.account_circle),
-      label: 'Profile',
-    ),
+    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Personal'),
+    BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Group'),
+    BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Gemini'),
+    BottomNavigationBarItem(icon: Icon(Icons.contacts), label: 'Contacts'),
+    BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat App'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Chat App'), centerTitle: true),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -59,5 +48,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  
 }
