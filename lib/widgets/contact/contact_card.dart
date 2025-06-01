@@ -35,7 +35,8 @@ class ContactCard extends StatelessWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.blue[50], // Background color of the icon
+                    color:
+                        Colors.deepPurple[50], // Background color of the icon
                     borderRadius: BorderRadius.circular(
                       25.0,
                     ), // Apply rounded corners to the icon container
@@ -43,7 +44,9 @@ class ContactCard extends StatelessWidget {
                   child: Icon(
                     Icons.people,
                     size: 30, // Set the icon size to fit within the rectangle
-                    color: Colors.blue, // You can change the color of the icon
+                    color:
+                        Colors
+                            .deepPurple, // You can change the color of the icon
                   ),
                 );
               },

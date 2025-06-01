@@ -6,6 +6,7 @@ import 'package:fp_kelompok_1_ppb_c/services/contact_service.dart';
 class ContactEditForm extends StatefulWidget {
   final DocumentSnapshot contact;
   const ContactEditForm({super.key, required this.contact});
+
   @override
   State<ContactEditForm> createState() => _ContactEditFormState();
 }
@@ -13,7 +14,6 @@ class ContactEditForm extends StatefulWidget {
 class _ContactEditFormState extends State<ContactEditForm> {
   late TextEditingController _aliasController;
   Map<String, dynamic>? contact;
-  bool isLoading = true;
 
   @override
   void initState() {
@@ -30,19 +30,19 @@ class _ContactEditFormState extends State<ContactEditForm> {
       setState(() {
         contact = contactData;
         _aliasController.text = contact?['alias'] ?? '';
-        isLoading = false;
       });
     } catch (e) {
       print('Error loading contact details: $e');
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
-  _showEditContactDialog() {
+  Future<void> _showEditContactDialog() async {
+    await _loadContactDetails();
+
     if (contact == null) return;
+
     _aliasController.text = contact!['alias'] ?? '';
+
     showDialog(
       context: context,
       builder: (context) {
@@ -76,9 +76,8 @@ class _ContactEditFormState extends State<ContactEditForm> {
                   widget.contact.id,
                   {...contact!, 'alias': _aliasController.text},
                 );
-                await _loadContactDetails();
-
                 Navigator.of(context).pop();
+                await _loadContactDetails(); // Optional: refresh setelah update
               },
               child: const Text('Save'),
             ),
@@ -97,12 +96,8 @@ class _ContactEditFormState extends State<ContactEditForm> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: isLoading ? null : _showEditContactDialog,
-      icon: Icon(
-        Icons.edit,
-        color: isLoading ? Colors.grey : Colors.blueAccent,
-        size: 20.0,
-      ),
+      onPressed: _showEditContactDialog,
+      icon: const Icon(Icons.edit, color: Colors.deepPurple, size: 20.0),
     );
   }
 }
