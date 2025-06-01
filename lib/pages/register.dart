@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -9,6 +10,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -31,16 +33,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _errorCode = "";
     });
 
+    var auth = Provider.of(context).auth;
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+      await auth.registerEmail(
+        _emailController.text,
+        _passwordController.text,
+        _usernameController.text,
       );
       navigateLogin();
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorCode = e.code;
-      });
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        setState(() {
+          _errorCode = e.message ?? "An error occurred. Please try again.";
+        });
+      } else {
+        setState(() {
+          _errorCode = "An unexpected error occurred.";
+        });
+      }
     }
 
     setState(() {
@@ -60,6 +70,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 48),
               Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
               const SizedBox(height: 48),
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(label: Text('Username')),
+              ),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(label: Text('Email')),
