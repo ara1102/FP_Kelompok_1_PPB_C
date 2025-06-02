@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:fp_kelompok_1_ppb_c/env.dart';
-import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
-import 'package:fp_kelompok_1_ppb_c/widgets/provider.dart';
 import 'firebase_options.dart';
 import './pages/home.dart';
 import './pages/login.dart';
