@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class AuthService {
+  static final AuthService _instance = AuthService();
+  static AuthService get instance => _instance;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
@@ -89,8 +91,8 @@ class NameValidator {
     if (value.length < 2) {
       return "Username must be at least 2 characters long";
     }
-    if (value.length > 50) {
-      return "Username must be less than 50 characters long";
+    if (value.length > 20) {
+      return "Username must be less than 20 characters long";
     }
     return null;
   }
