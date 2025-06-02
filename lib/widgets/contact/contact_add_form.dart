@@ -88,29 +88,20 @@ class _ContactAddFormState extends State<ContactAddForm> {
                     ),
                     enabled: !localLoading,
                   ),
-                  const SizedBox(height: 20),
-                  if (localLoading)
-                    const CircularProgressIndicator()
-                  else
-                    Row(
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _handleAddContact,
-                            child: const Text('Add Contact'),
-                          ),
-                        ),
-                      ],
-                    ),
                 ],
               ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _handleAddContact,
+                  child: const Text('Add Contact'),
+                ),
+              ],
             );
           },
         );

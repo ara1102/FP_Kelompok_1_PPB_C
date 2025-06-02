@@ -91,8 +91,8 @@ class NameValidator {
     if (value.length < 2) {
       return "Username must be at least 2 characters long";
     }
-    if (value.length > 50) {
-      return "Username must be less than 50 characters long";
+    if (value.length > 20) {
+      return "Username must be less than 20 characters long";
     }
     return null;
   }

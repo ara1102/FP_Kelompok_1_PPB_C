@@ -9,6 +9,8 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -64,48 +66,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: ListView(
-            children: [
-              const SizedBox(height: 48),
-              Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
-              const SizedBox(height: 48),
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(label: Text('Username')),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(label: Text('Email')),
-              ),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(label: Text('Password')),
-              ),
-              const SizedBox(height: 24),
-              _errorCode != ""
-                  ? Column(
-                    children: [Text(_errorCode), const SizedBox(height: 24)],
-                  )
-                  : const SizedBox(height: 0),
-              OutlinedButton(
-                onPressed: register,
-                child:
-                    _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Register'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Already have an account?'),
-                  TextButton(
-                    onPressed: navigateLogin,
-                    child: const Text('Login'),
-                  ),
-                ],
-              ),
-            ],
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                const SizedBox(height: 48),
+                Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
+                const SizedBox(height: 48),
+                TextFormField(
+                  validator: NameValidator.validate,
+                  controller: _usernameController,
+                  decoration: const InputDecoration(label: Text('Username')),
+                ),
+                TextFormField(
+                  validator: EmailValidator.validate,
+                  controller: _emailController,
+                  decoration: const InputDecoration(label: Text('Email')),
+                ),
+                TextFormField(
+                  validator: PasswordValidator.validate,
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(label: Text('Password')),
+                ),
+                const SizedBox(height: 24),
+                _errorCode != ""
+                    ? Column(
+                      children: [Text(_errorCode), const SizedBox(height: 24)],
+                    )
+                    : const SizedBox(height: 0),
+                OutlinedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      register(); // hanya dijalankan jika semua validator lolos
+                    }
+                  },
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text('Register'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Already have an account?'),
+                    TextButton(
+                      onPressed: navigateLogin,
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -25,8 +25,14 @@ class ContactDelete extends StatelessWidget {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('username: ${contactData['userName']}'),
-                  Text('alias: ${contactData['alias']}'),
+                  Text(
+                    'username: ${contactData['userName']}',
+                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
+                  ),
+                  Text(
+                    'contact name: ${contactData['alias']}',
+                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
+                  ),
                 ],
               ),
               actions: [
@@ -35,7 +41,7 @@ class ContactDelete extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                   child: Text('Cancel'),
                 ),
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
                     ContactService.instance.deleteContact(
                       AuthService.instance.getCurrentUserId(),
@@ -43,7 +49,7 @@ class ContactDelete extends StatelessWidget {
                     );
                     Navigator.pop(context); // Close the dialog after deleting
                   },
-                  child: Text('Ok'),
+                  child: Text('Delete'),
                 ),
                 // "No" button
               ],

@@ -9,6 +9,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -33,7 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await AuthService.instance.loginEmail(_emailController.text, _passwordController.text);
+      await AuthService.instance.loginEmail(
+        _emailController.text,
+        _passwordController.text,
+      );
       navigateHome();
     } catch (e) {
       if (e is FirebaseAuthException) {
@@ -59,44 +64,53 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: ListView(
-            children: [
-              const SizedBox(height: 48),
-              Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
-              const SizedBox(height: 48),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(label: Text('Email')),
-              ),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(label: Text('Password')),
-              ),
-              const SizedBox(height: 24),
-              _errorCode != ""
-                  ? Column(
-                    children: [Text(_errorCode), const SizedBox(height: 24)],
-                  )
-                  : const SizedBox(height: 0),
-              OutlinedButton(
-                onPressed: signIn,
-                child:
-                    _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Login'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(
-                    onPressed: navigateRegister,
-                    child: const Text('Register'),
-                  ),
-                ],
-              ),
-            ],
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                const SizedBox(height: 48),
+                Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
+                const SizedBox(height: 48),
+                TextFormField(
+                  validator: EmailValidator.validate,
+                  controller: _emailController,
+                  decoration: const InputDecoration(label: Text('Email')),
+                ),
+                TextFormField(
+                  validator: PasswordValidator.validate,
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(label: Text('Password')),
+                ),
+                const SizedBox(height: 24),
+                _errorCode != ""
+                    ? Column(
+                      children: [Text(_errorCode), const SizedBox(height: 24)],
+                    )
+                    : const SizedBox(height: 0),
+                OutlinedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      signIn(); // hanya dijalankan jika semua validator lolos
+                    }
+                  },
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text('Login'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Don\'t have an account?'),
+                    TextButton(
+                      onPressed: navigateRegister,
+                      child: const Text('Register'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

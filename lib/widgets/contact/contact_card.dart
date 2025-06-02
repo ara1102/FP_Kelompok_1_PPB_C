@@ -67,13 +67,6 @@ class ContactCard extends StatelessWidget {
             contact: contact, // Pass the contact
           ),
           ContactDelete(contact: contact),
-          // Edit form for the contact
-          // AuthorEditForm and DeleteConfirmationDialog should be placed outside Expanded
-          // AuthorEditForm(editAuthor: editAuthor, oldAuthor: author),
-          // AuthorDeleteConfirmationDialog(
-          //   author: author,
-          //   onDelete: deleteAuthor,
-          // ),
         ],
       ),
     );
