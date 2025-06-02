@@ -20,6 +20,16 @@ class AuthService {
     return _auth.currentUser;
   }
 
+  Future<Map<String, dynamic>?> getUserProfile() async {
+    final uid = getCurrentUserId();
+    if (uid.isEmpty) return null;
+
+    final doc = await _db.collection('Users').doc(uid).get();
+    if (!doc.exists) return null;
+
+    return doc.data();
+  }
+
   // getProfileImage() {
   //   if (_auth.currentUser != null && _auth.currentUser?.photoURL != null) {
   //     return Image.network(_auth.currentUser!.photoURL!);

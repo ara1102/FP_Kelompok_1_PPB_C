@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/chatbot_screen.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_widget.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     Center(child: Text('Group Chat', style: TextStyle(fontSize: 24))),
     Center(child: ChatbotScreen()),
     ContactWidget(),
-    Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+    ProfileWidget(),
   ];
 
   void _onItemTapped(int index) {
