@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018454023923",
+    "project_id": "fp-kelompok-1",
+    "storage_bucket": "fp-kelompok-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018454023923:android:0b85fc3a7fc14648982186",
+        "android_client_info": {
+          "package_name": "com.example.fp_kelompok_1_ppb_c"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC64UjyQdLSWU6CiNJJ-HxRnFWCxd3pO7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
