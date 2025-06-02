@@ -34,10 +34,6 @@ class _ContactAddFormState extends State<ContactAddForm> {
               }
 
               final currentUserId = AuthService.instance.getCurrentUserId();
-              if (currentUserId == null) {
-                _showSnackBar('Please login first');
-                return;
-              }
 
               setDialogState(() {
                 localLoading = true;

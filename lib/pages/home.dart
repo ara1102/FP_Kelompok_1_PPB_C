@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_card.dart';
-import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_list.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_widget.dart';
 
 class HomePage extends StatefulWidget {
