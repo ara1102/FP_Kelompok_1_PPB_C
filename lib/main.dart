@@ -23,17 +23,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      auth: AuthService(),
-      child: MaterialApp(
-        initialRoute: 'login',
-        routes: {
-          'home': (context) => const HomePage(),
-          'login': (context) => const LoginScreen(),
-          'register': (context) => const RegisterScreen(),
-        },
-        navigatorKey: navigatorKey,
-      ),
+    return MaterialApp(
+      initialRoute: 'login',
+      routes: {
+        'home': (context) => const HomePage(),
+        'login': (context) => const LoginScreen(),
+        'register': (context) => const RegisterScreen(),
+      },
+      navigatorKey: navigatorKey,
     );
   }
 }
