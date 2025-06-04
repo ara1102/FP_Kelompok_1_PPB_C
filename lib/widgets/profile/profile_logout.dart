@@ -19,7 +19,7 @@ class ProfileLogout extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Tidak'),
+                  child: const Text('No'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -29,7 +29,7 @@ class ProfileLogout extends StatelessWidget {
                       Navigator.of(context).pushReplacementNamed('login');
                     }
                   },
-                  child: const Text('Ya'),
+                  child: const Text('Logout'),
                 ),
               ],
             );
