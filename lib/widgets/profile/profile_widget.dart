@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_image_form.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_logout.dart';
 
 class ProfileWidget extends StatelessWidget {
   const ProfileWidget({super.key});
@@ -93,22 +94,7 @@ class ProfileWidget extends StatelessWidget {
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 24),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        onTap: () async {
-                          await AuthService.instance.logout();
-                          if (context.mounted) {
-                            Navigator.of(context).pushReplacementNamed('login');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                Expanded(child: ListView(children: [ProfileLogout()])),
               ],
             );
           },
