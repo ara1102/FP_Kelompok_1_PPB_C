@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart' as path;
+// import 'package:firebase_core/firebase_core.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService();
@@ -33,6 +39,27 @@ class AuthService {
   Future<void> updateUsername(String username, User currentUser) async {
     await currentUser.updateDisplayName(username);
     await currentUser.reload();
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getProfile(String userId) {
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userId)
+        .snapshots();
+  }
+
+  Future updateProfileImage(ui.Image? image) async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+    if (image == null) {
+      await _db.collection('Users').doc(currentUser.uid).update({'image': ''});
+      return;
+    }
+    final base64Image = await ImagetoBase64.convert(image);
+
+    await _db.collection('Users').doc(currentUser.uid).update({
+      'image': base64Image,
+    });
   }
 
   Future<String> registerEmail(
@@ -115,5 +142,60 @@ class PasswordValidator {
       return "Password must be at least 6 characters long";
     }
     return null;
+  }
+}
+
+class ImageValidator {
+  static const int maxSizeInBytes = 400 * 1024; // 400 KB
+  static const List<String> allowedFormats = ['jpg', 'jpeg', 'png'];
+
+  /// Validasi ukuran file gambar
+  static Future<bool> validateImageSize(File imageFile) async {
+    final int fileSize = await imageFile.length();
+    return fileSize <= maxSizeInBytes;
+  }
+
+  /// Validasi ekstensi format gambar
+  static bool validateImageFormat(File imageFile) {
+    final String extension = path.extension(imageFile.path).toLowerCase().replaceAll('.', '');
+    return allowedFormats.contains(extension);
+  }
+
+  /// Gabungan validasi ukuran & format
+  static Future<String?> validate(File imageFile) async {
+    if (!validateImageFormat(imageFile)) {
+      return 'Format gambar tidak didukung. Gunakan jpg, jpeg, atau png.';
+    }
+
+    if (!await validateImageSize(imageFile)) {
+      return 'Ukuran gambar melebihi 400KB.';
+    }
+
+    return null; // valid
+  }
+}
+
+class Base64toImage {
+  static convert(String base64String) {
+    try {
+      final Uint8List bytesImage = Base64Decoder().convert(base64String);
+      return bytesImage;
+    } catch (e) {
+      return null;
+    }
+  }
+}
+
+class ImagetoBase64 {
+  static Future<String> convert(ui.Image image) async {
+    if (image.width <= 0 || image.height <= 0) {
+      return '';
+    }
+    final ByteData? byteData = await image.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
+    if (byteData == null) return '';
+    final Uint8List bytes = byteData.buffer.asUint8List();
+    return base64Encode(bytes);
   }
 }
