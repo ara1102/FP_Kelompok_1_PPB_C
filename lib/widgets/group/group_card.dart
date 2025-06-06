@@ -1,0 +1,76 @@
+import 'package:flutter/material.dart';
+import 'package:fp_kelompok_1_ppb_c/services/group_service.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/group/group_settings_dialog.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/group/group_details_page.dart'; // import new dialog
+import 'package:firebase_auth/firebase_auth.dart';
+
+class GroupCard extends StatelessWidget {
+  final Group groupModel;
+
+  const GroupCard({super.key, required this.groupModel});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = groupModel.groupName;
+    final members = groupModel.members;
+    final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (ctx) => GroupDetailsPage(group: groupModel),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          leading: CircleAvatar(
+            backgroundColor: Colors.blueAccent.withOpacity(0.1),
+            child: const Icon(Icons.group, color: Colors.blueAccent),
+          ),
+          title: Text(
+            name,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          subtitle: Text(
+            'Members: ${members.length}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.settings, color: Colors.grey),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => GroupSettingsDialog(
+                  group: groupModel,
+                  currentUserId: currentUserId,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
