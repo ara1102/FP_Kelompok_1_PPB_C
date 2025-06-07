@@ -35,7 +35,7 @@ flutter_native_splash:
   
   # Set the branding padding from the bottom of the screen.  The default value is 0
   # (Not supported on web yet)
-  # branding_bottom_padding: 24
+  branding_bottom_padding: 15
 
   # The color_dark, background_image_dark, image_dark, branding_dark are parameters that set the background
   # and image when the device is in dark mode. If they are not specified, the app will use the
