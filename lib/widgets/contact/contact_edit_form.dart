@@ -4,7 +4,7 @@ import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/services/contact_service.dart';
 
 class ContactEditForm extends StatefulWidget {
-  final DocumentSnapshot contact;
+  final Map<String, dynamic> contact; // Changed to Map<String, dynamic>
   const ContactEditForm({super.key, required this.contact});
 
   @override
@@ -13,35 +13,47 @@ class ContactEditForm extends StatefulWidget {
 
 class _ContactEditFormState extends State<ContactEditForm> {
   late TextEditingController _aliasController;
-  Map<String, dynamic>? contact;
+  late Map<String, dynamic> _contactData; // Use this to store contact data
 
   @override
   void initState() {
     super.initState();
-    _aliasController = TextEditingController();
-    _loadContactDetails();
+    _contactData = Map<String, dynamic>.from(widget.contact); // Copy the map
+    _aliasController = TextEditingController(text: _contactData['alias'] ?? '');
   }
 
-  Future<void> _loadContactDetails() async {
-    try {
-      final contactData = await ContactService.instance.getContactDetails(
-        widget.contact,
+  void _showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), duration: const Duration(seconds: 3)),
       );
-      setState(() {
-        contact = contactData;
-        _aliasController.text = contact?['alias'] ?? '';
-      });
-    } catch (e) {
-      print('Error loading contact details: $e');
     }
   }
 
-  Future<void> _showEditContactDialog() async {
-    await _loadContactDetails();
+  Future<void> _handleSaveContact() async {
+    final newAlias = _aliasController.text.trim();
+    if (newAlias.isEmpty) {
+      _showSnackBar('Contact name cannot be empty');
+      return;
+    }
 
-    if (contact == null) return;
+    try {
+      await ContactService.instance.updateContact(
+        AuthService.instance.getCurrentUserId(),
+        _contactData['id'], // Pass the actual contactUserId
+        {'alias': newAlias}, // Only update the alias
+      );
+      _showSnackBar('Contact updated successfully');
+      Navigator.of(context).pop(); // Close the dialog
+    } catch (e) {
+      _showSnackBar('Failed to update contact: $e');
+      print('Error updating contact: $e'); // For debugging
+    }
+  }
 
-    _aliasController.text = contact!['alias'] ?? '';
+  Future<void> _openEditDialog() async {
+    // Re-initialize controller text in case contact data changed externally
+    _aliasController.text = (_contactData['alias'] ?? '').toString();
 
     showDialog(
       context: context,
@@ -52,7 +64,7 @@ class _ContactEditFormState extends State<ContactEditForm> {
               children: [
                 const TextSpan(text: 'Edit Contact '),
                 TextSpan(
-                  text: '@${contact!['userName']}',
+                  text: '@${_contactData['username'] ?? 'Unknown'}',
                   style: const TextStyle(fontStyle: FontStyle.italic),
                 ),
               ],
@@ -70,15 +82,7 @@ class _ContactEditFormState extends State<ContactEditForm> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () async {
-                await ContactService.instance.updateContact(
-                  AuthService.instance.getCurrentUserId(),
-                  widget.contact.id,
-                  {...contact!, 'alias': _aliasController.text},
-                );
-                Navigator.of(context).pop();
-                await _loadContactDetails(); // Optional: refresh setelah update
-              },
+              onPressed: _handleSaveContact,
               child: const Text('Save'),
             ),
           ],
@@ -96,7 +100,7 @@ class _ContactEditFormState extends State<ContactEditForm> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: _showEditContactDialog,
+      onPressed: _openEditDialog,
       icon: const Icon(Icons.edit, color: Colors.deepPurple, size: 20.0),
     );
   }

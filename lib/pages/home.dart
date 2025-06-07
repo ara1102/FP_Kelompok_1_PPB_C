@@ -13,9 +13,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _pages = <Widget>[
-    Center(child: Text('Personal Chat', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Group Chat', style: TextStyle(fontSize: 24))),
+  static final List<Widget> _pages = const <Widget>[
+    Center(
+      child: Text('Group Chat Coming Soon', style: TextStyle(fontSize: 24)),
+    ),
     Center(child: ChatbotScreen()),
     ContactAndGroupWidget(),
     ProfileWidget(),
@@ -28,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List<BottomNavigationBarItem> _navItems = const [
-    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Personal'),
     BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Group'),
     BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Gemini'),
     BottomNavigationBarItem(icon: Icon(Icons.contacts), label: 'Contacts'),

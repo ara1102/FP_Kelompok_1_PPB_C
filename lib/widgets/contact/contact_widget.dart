@@ -8,8 +8,21 @@ class ContactWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ContactList(),
-      floatingActionButton: ContactAddForm(),
+      body: const ContactList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const AlertDialog(
+                title: Text('Add New Contact'),
+                content: SingleChildScrollView(child: ContactAddForm()),
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
