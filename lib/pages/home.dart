@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List<BottomNavigationBarItem> _navItems = const [
-    BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+    BottomNavigationBarItem(icon: Icon(Icons.chat_outlined), label: 'Chat'),
     BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Gemini'),
     BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
   ];
