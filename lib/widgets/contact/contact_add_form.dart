@@ -97,7 +97,7 @@ class _ContactAddFormState extends State<ContactAddForm> {
         const SizedBox(height: 16),
         TextField(
           onChanged: (value) => contactName = value,
-          decoration: const InputDecoration(labelText: 'Contact Name'),
+          decoration: const InputDecoration(labelText: 'Add Nickname'),
           enabled: !localLoading,
         ),
         const SizedBox(height: 24), // Add some space before buttons

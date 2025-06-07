@@ -1,17 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/group_service.dart';
 
-class GroupDetailsPage extends StatelessWidget {
+class GroupDetailsPage extends StatefulWidget {
   final Group group;
 
   const GroupDetailsPage({super.key, required this.group});
 
   @override
+  State<GroupDetailsPage> createState() => _GroupDetailsPageState();
+}
+
+class _GroupDetailsPageState extends State<GroupDetailsPage> {
+  final GroupService _groupService = GroupService.instance;
+  Map<String, String> _memberUsernames = {};
+  Map<String, String> _adminUsernames = {};
+  bool _isLoadingUsernames = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsernames();
+  }
+
+  Future<void> _fetchUsernames() async {
+    Map<String, String> memberUsernames = {};
+    Map<String, String> adminUsernames = {};
+
+    for (String memberId in widget.group.members) {
+      try {
+        String username = await _groupService.getUsernameByUserId(memberId);
+        memberUsernames[memberId] = username;
+      } catch (e) {
+        memberUsernames[memberId] = 'Error: $e';
+      }
+    }
+
+    for (String adminId in widget.group.admins) {
+      try {
+        String username = await _groupService.getUsernameByUserId(adminId);
+        adminUsernames[adminId] = username;
+      } catch (e) {
+        adminUsernames[adminId] = 'Error: $e';
+      }
+    }
+
+    setState(() {
+      _memberUsernames = memberUsernames;
+      _adminUsernames = adminUsernames;
+      _isLoadingUsernames = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: null,
-      ),
+      appBar: AppBar(title: null),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
         child: Column(
@@ -20,7 +63,7 @@ class GroupDetailsPage extends StatelessWidget {
             // Title
             Center(
               child: Text(
-                group.groupName,
+                widget.group.groupName,
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -32,28 +75,57 @@ class GroupDetailsPage extends StatelessWidget {
 
             // Members Section
             _sectionCard(
-              title: 'Members (${group.members.length})',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: group.members.map((member) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text(member, style: TextStyle(fontSize: 16)),
-                )).toList(),
-              ),
+              title: 'Members (${widget.group.members.length})',
+              child:
+                  _isLoadingUsernames
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.group.members
+                                .map(
+                                  (memberId) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      _memberUsernames[memberId] ?? memberId,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
             ),
 
             const SizedBox(height: 16),
 
             // Admins Section
             _sectionCard(
-              title: 'Admins (${group.admins.length})',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: group.admins.map((admin) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text(admin, style: TextStyle(fontSize: 16, color: Colors.blueAccent)),
-                )).toList(),
-              ),
+              title: 'Admins (${widget.group.admins.length})',
+              child:
+                  _isLoadingUsernames
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.group.admins
+                                .map(
+                                  (adminId) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      _adminUsernames[adminId] ?? adminId,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
             ),
 
             const SizedBox(height: 24),
@@ -65,12 +137,18 @@ class GroupDetailsPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple.shade100,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 icon: Icon(Icons.chat_bubble),
                 label: Text('Go to Chat', style: TextStyle(fontSize: 16)),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/groupChat', arguments: group);
+                  Navigator.pushNamed(
+                    context,
+                    '/groupChat',
+                    arguments: widget.group,
+                  );
                 },
               ),
             ),
@@ -91,11 +169,13 @@ class GroupDetailsPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              )),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
           const SizedBox(height: 8),
           child,
         ],

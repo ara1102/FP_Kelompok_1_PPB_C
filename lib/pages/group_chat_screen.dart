@@ -1,32 +1,35 @@
+import 'dart:math'; // Import for random color generation
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
-import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart'; // Import ChatService
+import 'package:fp_kelompok_1_ppb_c/services/group_chat_service.dart'; // Import GroupChatService
+import 'package:fp_kelompok_1_ppb_c/services/group_service.dart'; // Import GroupService for Group model and username fetching
 
-class ChatScreen extends StatefulWidget {
-  final Map<String, dynamic> contact; // Changed to Map<String, dynamic>
-  const ChatScreen({super.key, required this.contact});
+class GroupChatScreen extends StatefulWidget {
+  final Group group; // Pass the Group object
+
+  const GroupChatScreen({super.key, required this.group});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<GroupChatScreen> createState() => _GroupChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-  late String contactAlias;
-  late String contactId; // This will be the actual userId of the contact
-
+class _GroupChatScreenState extends State<GroupChatScreen> {
   late ChatUser _currentUser;
-  late ChatUser _otherUser;
+  final GroupChatService _groupChatService = GroupChatService();
+  final GroupService _groupService =
+      GroupService.instance; // For fetching usernames
 
-  final ChatService _chatService = ChatService(); // Instance of ChatService
+  Map<String, ChatUser> _groupMembersChatUsers =
+      {}; // To store ChatUser objects for all members
+  final Map<String, Color> _memberColors =
+      {}; // To store random colors for members
+  final Random _random = Random();
 
   @override
   void initState() {
     super.initState();
-    contactAlias = widget.contact['alias'] ?? 'Contact';
-    contactId = widget.contact['id']; // Get the actual userId from the map
-
     final firebaseUser = AuthService.instance.getCurrentUser();
     if (firebaseUser == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -40,7 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       });
       _currentUser = ChatUser(id: 'error_user', firstName: 'Error');
-      _otherUser = ChatUser(id: contactId, firstName: contactAlias);
       return;
     }
 
@@ -49,48 +51,55 @@ class _ChatScreenState extends State<ChatScreen> {
       firstName: firebaseUser.displayName ?? firebaseUser.email ?? 'You',
     );
 
-    _otherUser = ChatUser(
-      id: contactId,
-      firstName: contactAlias,
-      // profileImage: contactData['profileImageUrl'],
-    );
-
-    _initializeChatRoom(); // Call async method to initialize chat room
+    _initializeGroupMembers();
   }
 
-  String? _chatRoomId; // Made nullable
-
-  Future<void> _initializeChatRoom() async {
-    try {
-      _chatRoomId = await _chatService.createOrGetChat(
-        _currentUser.id,
-        _otherUser.id,
-      );
-      setState(() {}); // Trigger rebuild after chatRoomId is set
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error initializing chat: ${e.toString()}')),
-        );
+  Future<void> _initializeGroupMembers() async {
+    Map<String, ChatUser> members = {};
+    for (String memberId in widget.group.members) {
+      try {
+        String username = await _groupService.getUsernameByUserId(memberId);
+        members[memberId] = ChatUser(id: memberId, firstName: username);
+        _memberColors[memberId] =
+            _generateRandomColor(); // Assign a random color
+      } catch (e) {
+        members[memberId] = ChatUser(id: memberId, firstName: 'Unknown User');
+        _memberColors[memberId] = Colors.grey; // Default color for error
+        print('Error fetching username for $memberId: $e');
       }
-      _chatRoomId = 'error_room'; // Indicate an error state
-      setState(() {});
     }
+    setState(() {
+      _groupMembersChatUsers = members;
+    });
+  }
+
+  Color _generateRandomColor() {
+    // Generate colors that are generally visible on both light and dark backgrounds.
+    // Avoids very light colors (hard to see on white) and very dark colors (hard to see on black).
+    // This range (50-200) aims for medium brightness.
+    return Color.fromARGB(
+      255,
+      _random.nextInt(150) + 50, // R: 50-199
+      _random.nextInt(150) + 50, // G: 50-199
+      _random.nextInt(150) + 50, // B: 50-199
+    );
   }
 
   Future<void> _onSend(ChatMessage message) async {
-    if (_chatRoomId == null || _chatRoomId == 'error_room') {
+    if (_currentUser.id == 'error_user') {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Chat is not ready yet. Please wait.')),
+          const SnackBar(
+            content: Text('User not authenticated. Cannot send message.'),
+          ),
         );
       }
       return;
     }
 
     try {
-      await _chatService.sendMessage(
-        _chatRoomId!, // Use ! because we've checked for null
+      await _groupChatService.sendMessageToGroup(
+        widget.group.id,
         message.user.id,
         message.text,
       );
@@ -176,8 +185,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 final newText = _editController.text.trim();
                 if (newText.isNotEmpty) {
                   try {
-                    await _chatService.editMessage(
-                      _chatRoomId!,
+                    await _groupChatService.editGroupMessage(
+                      widget.group.id,
                       messageId,
                       newText,
                     );
@@ -231,7 +240,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 try {
-                  await _chatService.deleteMessage(_chatRoomId!, messageId);
+                  await _groupChatService.deleteGroupMessage(
+                    widget.group.id,
+                    messageId,
+                  );
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Message deleted.')),
@@ -261,36 +273,27 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     if (_currentUser.id == 'error_user') {
       return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
+        appBar: AppBar(title: Text(widget.group.groupName)),
         body: const Center(child: Text("User not authenticated.")),
       );
     }
 
-    if (_chatRoomId == null) {
+    if (_groupMembersChatUsers.isEmpty && widget.group.members.isNotEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
+        appBar: AppBar(title: Text(widget.group.groupName)),
         body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_chatRoomId == 'error_room') {
-      return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
-        body: const Center(child: Text("Failed to initialize chat room.")),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          contactAlias,
+          widget.group.groupName,
           style: const TextStyle(fontSize: 20), // Increased font size
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _chatService.getChatMessages(
-          _chatRoomId!,
-        ), // Use ! because we've checked for null
+        stream: _groupChatService.getGroupChatMessages(widget.group.id),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error.toString()}'));
@@ -310,15 +313,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   final timestamp =
                       (data['timestamp'] as Timestamp?)?.toDate() ??
                       DateTime.now();
-                  final messageId = doc.id; // Get the message ID
-                  final isEdited =
-                      data['edited'] as bool? ?? false; // Get edited status
+                  final messageId = doc.id;
+                  final isEdited = data['edited'] as bool? ?? false;
+
+                  // Get the ChatUser for the sender
+                  final ChatUser senderUser =
+                      _groupMembersChatUsers[senderId] ??
+                      ChatUser(id: senderId, firstName: 'Unknown');
 
                   return ChatMessage(
-                    user:
-                        (senderId == _currentUser.id)
-                            ? _currentUser
-                            : _otherUser,
+                    user: senderUser,
                     text: text,
                     createdAt: timestamp,
                     customProperties: {
@@ -327,7 +331,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   );
                 }).toList();
-            // DashChat expects messages in reverse chronological order (newest first)
             displayMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           }
 
@@ -338,11 +341,14 @@ class _ChatScreenState extends State<ChatScreen> {
             messageOptions: MessageOptions(
               showCurrentUserAvatar: true,
               showOtherUsersAvatar: true,
-              showOtherUsersName: true, // Disable default name display
+              showOtherUsersName: false, // Disable default name display
               messageTextBuilder: (message, previousMessage, nextMessage) {
                 final bool isMyMessage = message.user.id == _currentUser.id;
                 final bool isEdited =
                     message.customProperties?['edited'] as bool? ?? false;
+                final Color senderColor =
+                    _memberColors[message.user.id] ??
+                    Colors.black; // Get assigned color
 
                 return GestureDetector(
                   onLongPress: () => _showEditDeleteDialog(message),
@@ -352,6 +358,19 @@ class _ChatScreenState extends State<ChatScreen> {
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                     children: [
+                      // Display sender's name with random color for other users
+                      if (!isMyMessage)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            message.user.firstName ?? 'Unknown',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: senderColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       Text(
                         message.text,
                         style: TextStyle(

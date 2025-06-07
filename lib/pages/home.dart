@@ -14,11 +14,8 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static final List<Widget> _pages = const <Widget>[
-    Center(
-      child: Text('Group Chat Coming Soon', style: TextStyle(fontSize: 24)),
-    ),
-    Center(child: ChatbotScreen()),
     ContactAndGroupWidget(),
+    ChatbotScreen(),
     ProfileWidget(),
   ];
 
@@ -29,9 +26,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List<BottomNavigationBarItem> _navItems = const [
-    BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Group'),
+    BottomNavigationBarItem(icon: Icon(Icons.chat_outlined), label: 'Chat'),
     BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Gemini'),
-    BottomNavigationBarItem(icon: Icon(Icons.contacts), label: 'Contacts'),
     BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
   ];
 

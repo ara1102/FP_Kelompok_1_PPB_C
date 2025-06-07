@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_delete.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_edit_form.dart';
@@ -14,8 +13,8 @@ class ContactCard extends StatelessWidget {
     // Access data directly from the map
     var alias = contact['alias'] ?? '';
     var profileImageUrl = contact['profileImageUrl'] as String?;
-    final String contactUserId =
-        contact['id']; // Get the actual userId of the contact
+    // final String contactUserId =
+    //     contact['id']; // Get the actual userId of the contact
 
     Widget contactImage = Container(
       width: 50,
@@ -25,7 +24,7 @@ class ContactCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(25.0), // Apply rounded corners
       ),
       child: const Icon(
-        Icons.people,
+        Icons.person,
         size: 30, // Set the icon size to fit within the rectangle
         color: Colors.deepPurple, // You can change the color of the icon
       ),
