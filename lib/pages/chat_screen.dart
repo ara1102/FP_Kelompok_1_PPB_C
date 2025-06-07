@@ -103,6 +103,160 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _showEditDeleteDialog(ChatMessage message) {
+    if (message.user.id != _currentUser.id) {
+      // Only allow editing/deleting own messages
+      return;
+    }
+
+    final messageId = message.customProperties?['messageId'] as String?;
+    if (messageId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Message ID not found.')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Message Options'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Message'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close dialog
+                  _showEditMessageDialog(message, messageId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete Message'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close dialog
+                  _confirmDeleteMessage(messageId);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditMessageDialog(ChatMessage message, String messageId) {
+    final TextEditingController _editController = TextEditingController(
+      text: message.text,
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Message'),
+          content: TextField(
+            controller: _editController,
+            decoration: const InputDecoration(hintText: 'Enter new message'),
+            maxLines: null, // Allow multiline input
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                final newText = _editController.text.trim();
+                if (newText.isNotEmpty) {
+                  try {
+                    await _chatService.editMessage(
+                      _chatRoomId!,
+                      messageId,
+                      newText,
+                    );
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Message edited.')),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Error editing message: ${e.toString()}',
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                } else {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Message cannot be empty.')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmDeleteMessage(String messageId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Message'),
+          content: const Text('Are you sure you want to delete this message?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await _chatService.deleteMessage(_chatRoomId!, messageId);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Message deleted.')),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Error deleting message: ${e.toString()}',
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_currentUser.id == 'error_user') {
@@ -115,10 +269,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_chatRoomId == null) {
       return Scaffold(
         appBar: AppBar(title: Text(contactAlias)),
-        body: const Center(
-          child:
-              CircularProgressIndicator(), // Show loading while chat room initializes
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -151,10 +302,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   final data = doc.data() as Map<String, dynamic>;
                   final senderId = data['senderId'] as String;
                   final text = data['text'] as String;
-                  // Handle potential null timestamp
                   final timestamp =
                       (data['timestamp'] as Timestamp?)?.toDate() ??
                       DateTime.now();
+                  final messageId = doc.id; // Get the message ID
+                  final isEdited =
+                      data['edited'] as bool? ?? false; // Get edited status
 
                   return ChatMessage(
                     user:
@@ -163,6 +316,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             : _otherUser,
                     text: text,
                     createdAt: timestamp,
+                    customProperties: {
+                      'messageId': messageId,
+                      'edited': isEdited,
+                    },
                   );
                 }).toList();
             // DashChat expects messages in reverse chronological order (newest first)
@@ -173,9 +330,40 @@ class _ChatScreenState extends State<ChatScreen> {
             currentUser: _currentUser,
             onSend: _onSend,
             messages: displayMessages,
-            messageOptions: const MessageOptions(
+            messageOptions: MessageOptions(
               showCurrentUserAvatar: true,
               showOtherUsersAvatar: true,
+              messageTextBuilder: (message, previousMessage, nextMessage) {
+                final bool isMyMessage = message.user.id == _currentUser.id;
+                final bool isEdited =
+                    message.customProperties?['edited'] as bool? ?? false;
+
+                return GestureDetector(
+                  onLongPress: () => _showEditDeleteDialog(message),
+                  child: Column(
+                    crossAxisAlignment:
+                        isMyMessage
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.text,
+                        style: TextStyle(
+                          color: isMyMessage ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      if (isEdited)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            'Edited',
+                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
           );
         },
