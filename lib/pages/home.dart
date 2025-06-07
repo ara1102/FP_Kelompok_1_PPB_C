@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/chatbot_screen.dart';
+import 'package:fp_kelompok_1_ppb_c/pages/personal_chats_list_screen.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_widget.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_widget.dart';
 
@@ -13,9 +14,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _pages = <Widget>[
-    Center(child: Text('Personal Chat', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Group Chat', style: TextStyle(fontSize: 24))),
+  static final List<Widget> _pages = const <Widget>[
+    PersonalChatsListScreen(),
+    Center(
+      child: Text('Group Chat Coming Soon', style: TextStyle(fontSize: 24)),
+    ),
     Center(child: ChatbotScreen()),
     ContactWidget(),
     ProfileWidget(),
