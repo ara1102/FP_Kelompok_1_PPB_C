@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:fp_kelompok_1_ppb_c/env.dart';
 import 'firebase_options.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/home.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/login.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/register.dart';
@@ -10,9 +11,13 @@ import 'package:fp_kelompok_1_ppb_c/pages/group_chat_screen.dart';
 import 'package:fp_kelompok_1_ppb_c/services/group_service.dart'; // Import Group model
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Gemini.init(apiKey: GEMINI_API_KEY, enableDebugging: true);
+
+  FlutterNativeSplash.remove();
+
   runApp(const MyApp());
 }
 
