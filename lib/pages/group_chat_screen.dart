@@ -1,3 +1,4 @@
+import 'dart:math'; // Import for random color generation
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
   Map<String, ChatUser> _groupMembersChatUsers =
       {}; // To store ChatUser objects for all members
+  final Map<String, Color> _memberColors =
+      {}; // To store random colors for members
+  final Random _random = Random();
 
   @override
   void initState() {
@@ -56,14 +60,29 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       try {
         String username = await _groupService.getUsernameByUserId(memberId);
         members[memberId] = ChatUser(id: memberId, firstName: username);
+        _memberColors[memberId] =
+            _generateRandomColor(); // Assign a random color
       } catch (e) {
         members[memberId] = ChatUser(id: memberId, firstName: 'Unknown User');
+        _memberColors[memberId] = Colors.grey; // Default color for error
         print('Error fetching username for $memberId: $e');
       }
     }
     setState(() {
       _groupMembersChatUsers = members;
     });
+  }
+
+  Color _generateRandomColor() {
+    // Generate colors that are generally visible on both light and dark backgrounds.
+    // Avoids very light colors (hard to see on white) and very dark colors (hard to see on black).
+    // This range (50-200) aims for medium brightness.
+    return Color.fromARGB(
+      255,
+      _random.nextInt(150) + 50, // R: 50-199
+      _random.nextInt(150) + 50, // G: 50-199
+      _random.nextInt(150) + 50, // B: 50-199
+    );
   }
 
   Future<void> _onSend(ChatMessage message) async {
@@ -267,7 +286,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.group.groupName)),
+      appBar: AppBar(
+        title: Text(
+          widget.group.groupName,
+          style: const TextStyle(fontSize: 20), // Increased font size
+        ),
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _groupChatService.getGroupChatMessages(widget.group.id),
         builder: (context, snapshot) {
@@ -317,11 +341,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             messageOptions: MessageOptions(
               showCurrentUserAvatar: true,
               showOtherUsersAvatar: true,
-              showOtherUsersName: true, // Show sender's name in group chat
+              showOtherUsersName: false, // Disable default name display
               messageTextBuilder: (message, previousMessage, nextMessage) {
                 final bool isMyMessage = message.user.id == _currentUser.id;
                 final bool isEdited =
                     message.customProperties?['edited'] as bool? ?? false;
+                final Color senderColor =
+                    _memberColors[message.user.id] ??
+                    Colors.black; // Get assigned color
 
                 return GestureDetector(
                   onLongPress: () => _showEditDeleteDialog(message),
@@ -331,6 +358,19 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                     children: [
+                      // Display sender's name with random color for other users
+                      if (!isMyMessage)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(
+                            message.user.firstName ?? 'Unknown',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: senderColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       Text(
                         message.text,
                         style: TextStyle(

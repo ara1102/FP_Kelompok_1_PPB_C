@@ -21,35 +21,42 @@ class GroupSettingsDialog extends StatelessWidget {
     void leaveGroup() async {
       await groupService.leaveGroup(groupId: group.id, userId: currentUserId);
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You left the group')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('You left the group')));
     }
 
     void deleteGroup() async {
       final confirm = await showDialog<bool>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Delete Group'),
-          content: Text('Are you sure you want to delete "${group.groupName}"?'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Cancel')),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+        builder:
+            (ctx) => AlertDialog(
+              title: Text('Delete Group'),
+              content: Text(
+                'Are you sure you want to delete "${group.groupName}"?',
               ),
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text('Delete'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text('Delete'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
       if (confirm == true) {
-        await groupService.deleteGroup(groupId: group.id, userId: currentUserId);
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Group deleted')),
+        await groupService.deleteGroup(
+          groupId: group.id,
+          userId: currentUserId,
         );
+        Navigator.pop(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Group deleted')));
       }
     }
 
@@ -67,30 +74,31 @@ class GroupSettingsDialog extends StatelessWidget {
 
       await showDialog(
         context: context,
-        builder: (_) => GroupDialog(
-          currentUserId: currentUserId,
-          initialGroupName: group.groupName,
-          initialMembers: group.members,
-          initialAdmins: group.admins,
-          onSubmit: (updatedName, updatedMembers, updatedAdmins) async {
-            try {
-              await GroupService().updateGroup(
-                groupId: group.id,
-                userId: currentUserId,
-                newGroupName: updatedName,
-                newMembers: updatedMembers,
-                newAdmins: updatedAdmins,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Group "$updatedName" updated!')),
-              );
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Update failed: $e')),
-              );
-            }
-          },
-        ),
+        builder:
+            (_) => GroupDialog(
+              currentUserId: currentUserId,
+              initialGroupName: group.groupName,
+              initialMembers: group.members,
+              initialAdmins: group.admins,
+              onSubmit: (updatedName, updatedMembers, updatedAdmins) async {
+                try {
+                  await GroupService().updateGroup(
+                    groupId: group.id,
+                    userId: currentUserId,
+                    newGroupName: updatedName,
+                    newMembers: updatedMembers,
+                    newAdmins: updatedAdmins,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Group "$updatedName" updated!')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Update failed: $e')));
+                }
+              },
+            ),
       );
     }
 
@@ -113,24 +121,57 @@ class GroupSettingsDialog extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            if (isAdmin)
-              ListTile(
-                leading: Icon(Icons.edit, color: Colors.blueAccent),
-                title: Text('Edit Group', style: TextStyle(fontWeight: FontWeight.w600)),
-                trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.blueAccent),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                tileColor: Colors.blueAccent.withOpacity(0.1),
-                onTap: openEditDialog,
+            ListTile(
+              leading: Icon(
+                Icons.edit,
+                color: isAdmin ? Colors.blueAccent : Colors.grey,
               ),
+              title: Text(
+                'Edit Group',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isAdmin ? Colors.black87 : Colors.grey,
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: isAdmin ? Colors.blueAccent : Colors.grey,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              tileColor:
+                  isAdmin
+                      ? Colors.blueAccent.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.1),
+              onTap:
+                  isAdmin
+                      ? openEditDialog
+                      : () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Only group admins can edit the group',
+                            ),
+                          ),
+                        );
+                      },
+            ),
 
-            if (isAdmin) SizedBox(height: 12),
+            SizedBox(height: 12),
 
             ListTile(
               leading: Icon(Icons.exit_to_app, color: Colors.orange),
-              title: Text('Leave Group', style: TextStyle(fontWeight: FontWeight.w600)),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.orange),
+              title: Text(
+                'Leave Group',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.orange,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -138,19 +179,45 @@ class GroupSettingsDialog extends StatelessWidget {
               onTap: leaveGroup,
             ),
 
-            if (isAdmin) SizedBox(height: 12),
+            SizedBox(height: 12),
 
-            if (isAdmin)
-              ListTile(
-                leading: Icon(Icons.delete, color: Colors.redAccent),
-                title: Text('Delete Group', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.redAccent)),
-                trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.redAccent),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                tileColor: Colors.redAccent.withOpacity(0.1),
-                onTap: deleteGroup,
+            ListTile(
+              leading: Icon(
+                Icons.delete,
+                color: isAdmin ? Colors.redAccent : Colors.grey,
               ),
+              title: Text(
+                'Delete Group',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isAdmin ? Colors.redAccent : Colors.grey,
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: isAdmin ? Colors.redAccent : Colors.grey,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              tileColor:
+                  isAdmin
+                      ? Colors.redAccent.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.1),
+              onTap:
+                  isAdmin
+                      ? deleteGroup
+                      : () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Only group admins can delete the group',
+                            ),
+                          ),
+                        );
+                      },
+            ),
 
             SizedBox(height: 24),
 
@@ -160,10 +227,15 @@ class GroupSettingsDialog extends StatelessWidget {
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   backgroundColor: Colors.grey.shade200,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: Text('Close', style: TextStyle(color: Colors.grey.shade800)),
+                child: Text(
+                  'Close',
+                  style: TextStyle(color: Colors.grey.shade800),
+                ),
               ),
             ),
           ],

@@ -281,7 +281,12 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(contactAlias)),
+      appBar: AppBar(
+        title: Text(
+          contactAlias,
+          style: const TextStyle(fontSize: 20), // Increased font size
+        ),
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _chatService.getChatMessages(
           _chatRoomId!,
@@ -333,6 +338,7 @@ class _ChatScreenState extends State<ChatScreen> {
             messageOptions: MessageOptions(
               showCurrentUserAvatar: true,
               showOtherUsersAvatar: true,
+              showOtherUsersName: true, // Disable default name display
               messageTextBuilder: (message, previousMessage, nextMessage) {
                 final bool isMyMessage = message.user.id == _currentUser.id;
                 final bool isEdited =

@@ -14,6 +14,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   final GroupService _groupService = GroupService.instance;
   Map<String, String> _memberUsernames = {};
   Map<String, String> _adminUsernames = {};
+  bool _isLoadingUsernames = true;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     setState(() {
       _memberUsernames = memberUsernames;
       _adminUsernames = adminUsernames;
+      _isLoadingUsernames = false;
     });
   }
 
@@ -74,21 +76,26 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             // Members Section
             _sectionCard(
               title: 'Members (${widget.group.members.length})',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    widget.group.members
-                        .map(
-                          (memberId) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              _memberUsernames[memberId] ?? memberId,
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
+              child:
+                  _isLoadingUsernames
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.group.members
+                                .map(
+                                  (memberId) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      _memberUsernames[memberId] ?? memberId,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
             ),
 
             const SizedBox(height: 16),
@@ -96,24 +103,29 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             // Admins Section
             _sectionCard(
               title: 'Admins (${widget.group.admins.length})',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    widget.group.admins
-                        .map(
-                          (adminId) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              _adminUsernames[adminId] ?? adminId,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.blueAccent,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
+              child:
+                  _isLoadingUsernames
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.group.admins
+                                .map(
+                                  (adminId) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      _adminUsernames[adminId] ?? adminId,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
             ),
 
             const SizedBox(height: 24),
