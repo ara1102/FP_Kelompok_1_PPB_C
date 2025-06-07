@@ -186,6 +186,7 @@ class _GroupDialogState extends State<GroupDialog> {
         _applyFilter();
       });
     } catch (e) {
+      print(e);
     } finally {
       setState(() => _loading = false);
     }

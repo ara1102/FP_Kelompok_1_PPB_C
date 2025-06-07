@@ -9,7 +9,7 @@ class GroupWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GroupList(),
-      floatingActionButton: GroupAddForm(),
+      // floatingActionButton: GroupAddForm(),
     );
   }
 }

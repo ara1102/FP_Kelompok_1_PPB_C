@@ -7,15 +7,22 @@ class ContactContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ContactList(),
-        Positioned(
-          bottom: 16,
-          right: 16,
-          child: ContactAddForm(),
-        ),
-      ],
+    return Scaffold(
+      body: const ContactList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const AlertDialog(
+                title: Text('Add New Contact'),
+                content: SingleChildScrollView(child: ContactAddForm()),
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

@@ -10,11 +10,7 @@ class GroupContent extends StatelessWidget {
     return Stack(
       children: [
         GroupList(),
-        Positioned(
-          bottom: 16,
-          right: 16,
-          child: GroupAddForm(),
-        ),
+        Positioned(bottom: 16, right: 16, child: GroupAddForm()),
       ],
     );
   }
