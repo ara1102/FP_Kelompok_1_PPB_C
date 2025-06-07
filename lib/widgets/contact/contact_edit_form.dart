@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/services/contact_service.dart';
@@ -72,7 +71,7 @@ class _ContactEditFormState extends State<ContactEditForm> {
           ),
           content: TextField(
             controller: _aliasController,
-            decoration: const InputDecoration(labelText: 'Contact Name'),
+            decoration: const InputDecoration(labelText: 'Edit Nickname'),
           ),
           actions: [
             TextButton(
