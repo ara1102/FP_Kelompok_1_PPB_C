@@ -24,7 +24,7 @@ class ContactCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(25.0), // Apply rounded corners
       ),
       child: const Icon(
-        Icons.person_2,
+        Icons.person,
         size: 30, // Set the icon size to fit within the rectangle
         color: Colors.deepPurple, // You can change the color of the icon
       ),
