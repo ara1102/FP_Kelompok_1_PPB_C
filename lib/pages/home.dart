@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
 
   static final List<Widget> _pages = const <Widget>[
     ContactAndGroupWidget(),
-    Center(child: Text('Chat History', style: TextStyle(fontSize: 24))),
     ChatbotScreen(),
     ProfileWidget(),
   ];
@@ -28,7 +27,6 @@ class _HomePageState extends State<HomePage> {
 
   final List<BottomNavigationBarItem> _navItems = const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-    BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
     BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Gemini'),
     BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
   ];
