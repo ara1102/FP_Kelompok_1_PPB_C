@@ -6,7 +6,7 @@ class ConfirmDeleteDialog {
     BuildContext context,
     String messageId,
     String chatRoomId,
-    ChatService chatService,
+    Function(String, String) onDeleteMessage,
   ) {
     showDialog(
       context: context,
@@ -25,7 +25,7 @@ class ConfirmDeleteDialog {
               onPressed: () async {
                 Navigator.of(context).pop();
                 try {
-                  await chatService.deleteMessage(chatRoomId, messageId);
+                  await onDeleteMessage(chatRoomId, messageId);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Message deleted.')),

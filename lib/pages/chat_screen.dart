@@ -135,13 +135,13 @@ class _ChatScreenState extends State<ChatScreen> {
               msg,
               msgId,
               _chatRoomId!,
-              _chatService,
+              _chatService.editMessage, // Pass the specific function
             ),
             (msgId) => ConfirmDeleteDialog.show(
               context,
               msgId,
               _chatRoomId!,
-              _chatService,
+              _chatService.deleteMessage, // Pass the specific function
             ),
           );
         },

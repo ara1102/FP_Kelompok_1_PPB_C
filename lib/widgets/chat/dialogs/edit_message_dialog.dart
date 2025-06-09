@@ -8,7 +8,7 @@ class EditMessageDialog {
     ChatMessage message,
     String messageId,
     String chatRoomId,
-    ChatService chatService,
+    Function(String, String, String) onEditMessage,
   ) {
     final TextEditingController editController = TextEditingController(
       text: message.text,
@@ -37,11 +37,7 @@ class EditMessageDialog {
                 final newText = editController.text.trim();
                 if (newText.isNotEmpty) {
                   try {
-                    await chatService.editMessage(
-                      chatRoomId,
-                      messageId,
-                      newText,
-                    );
+                    await onEditMessage(chatRoomId, messageId, newText);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Message edited.')),
