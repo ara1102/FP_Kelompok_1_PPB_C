@@ -1,7 +1,7 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart'; // Contains Base64toImage
-import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart'; // Import ChatService
+import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
+import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/chat_app_bar.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/chat_message_list.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/confirm_delete_dialog.dart';
@@ -20,6 +20,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late String contactAlias;
   late String contactId; // This will be the actual userId of the contact
+  late String contactProfileImageBase64;
 
   late ChatUser _currentUser;
   late ChatUser _otherUser;
@@ -31,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     contactAlias = widget.contact['alias'] ?? 'Contact';
     contactId = widget.contact['id']; // Get the actual userId from the map
+    contactProfileImageBase64 = widget.contact['profileImageUrl'];
 
     final firebaseUser = AuthService.instance.getCurrentUser();
     if (firebaseUser == null) {
@@ -52,18 +54,48 @@ class _ChatScreenState extends State<ChatScreen> {
     _currentUser = ChatUser(
       id: firebaseUser.uid,
       firstName: firebaseUser.displayName ?? firebaseUser.email ?? 'You',
+      customProperties: {}, // Initialize as empty map
     );
 
     _otherUser = ChatUser(
       id: contactId,
       firstName: contactAlias,
       // profileImage: contactData['profileImageUrl'],
+      customProperties: {'base64Image': contactProfileImageBase64},
     );
 
+    _fetchCurrentUserProfileImage(); // Fetch current user's profile image
     _initializeChatRoom(); // Call async method to initialize chat room
   }
 
   String? _chatRoomId; // Made nullable
+
+  Future<void> _fetchCurrentUserProfileImage() async {
+    try {
+      final currentUserImageBase64 = await AuthService.instance.getImageBase64(
+        _currentUser.id,
+      );
+      if (mounted) {
+        setState(() {
+          _currentUser = ChatUser(
+            id: _currentUser.id,
+            firstName: _currentUser.firstName,
+            customProperties: {'base64Image': currentUserImageBase64},
+          );
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error fetching current user profile image: ${e.toString()}',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _initializeChatRoom() async {
     try {

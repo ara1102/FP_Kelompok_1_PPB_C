@@ -2,6 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/contact_avatar.dart'; // Import ContactAvatar
+
+// Helper function to decode the string safely
+Uint8List? _decodeBase64(String base64String) {
+  try {
+    String pureBase64 = base64String.split(',').last;
+    return base64Decode(pureBase64);
+  } catch (e) {
+    return null;
+  }
+}
 
 class ChatMessageList extends StatelessWidget {
   final ChatUser currentUser;
@@ -95,6 +108,45 @@ class ChatMessageList extends StatelessWidget {
                         ),
                       ),
                   ],
+                ),
+              );
+            },
+            avatarBuilder: (
+              ChatUser user,
+              Function? onPressAvatar,
+              Function? onLongPressAvatar,
+            ) {
+              final base64String =
+                  user.customProperties?['base64Image'] as String?;
+
+              if (base64String != null && base64String.isNotEmpty) {
+                final imageBytes = _decodeBase64(base64String);
+                if (imageBytes != null) {
+                  return InkWell(
+                    onTap: () => onPressAvatar?.call(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ), // Add horizontal padding
+                      child: ContactAvatar(
+                        profileImageUrl: base64String, // Pass the base64 string
+                        size: 40, // Default size for DashChat avatars
+                      ),
+                    ),
+                  );
+                }
+              }
+              // Fallback to a default avatar (e.g., initials or default ContactAvatar)
+              return InkWell(
+                onTap: () => onPressAvatar?.call(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ), // Add horizontal padding
+                  child: ContactAvatar(
+                    profileImageUrl: null, // No image, will show default
+                    size: 40,
+                  ),
                 ),
               );
             },
