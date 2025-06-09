@@ -20,13 +20,19 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
   File? _selectedImage;
 
   Future<ui.Image> _convertToUiImage(img.Image image) async {
+    final Uint8List bytes = Uint8List.fromList(
+      image.getBytes(order: img.ChannelOrder.rgba),
+    );
+
     final completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(
-      image.getBytes(format: img.Format.rgba),
+      bytes,
       image.width,
       image.height,
       ui.PixelFormat.rgba8888,
-      (ui.Image img) => completer.complete(img),
+      (ui.Image img) {
+        completer.complete(img);
+      },
     );
     return completer.future;
   }

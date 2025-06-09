@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late String contactAlias;
   late String contactId; // This will be the actual userId of the contact
 
+  late Widget contactImage;
+
   late ChatUser _currentUser;
   late ChatUser _otherUser;
 
@@ -26,6 +30,51 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     contactAlias = widget.contact['alias'] ?? 'Contact';
     contactId = widget.contact['id']; // Get the actual userId from the map
+
+    Uint8List? imageProfile = Base64toImage.convert(
+      widget.contact['profileImageUrl'],
+    );
+
+    contactImage = Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.deepPurple[50], // Background color of the icon
+        borderRadius: BorderRadius.circular(25.0), // Apply rounded corners
+      ),
+      child: const Icon(
+        Icons.person,
+        size: 30, // Set the icon size to fit within the rectangle
+        color: Colors.deepPurple, // You can change the color of the icon
+      ),
+    );
+
+    if (imageProfile != null && imageProfile.isNotEmpty) {
+      contactImage = ClipRRect(
+        borderRadius: BorderRadius.circular(25.0),
+        child: Image.memory(
+          imageProfile,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.deepPurple[50],
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              child: const Icon(
+                Icons.people,
+                size: 24,
+                color: Colors.deepPurple,
+              ),
+            );
+          },
+        ),
+      );
+    }
 
     final firebaseUser = AuthService.instance.getCurrentUser();
     if (firebaseUser == null) {
@@ -261,30 +310,81 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     if (_currentUser.id == 'error_user') {
       return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
+        appBar: AppBar(
+          title: Row(
+            children: [
+              if (contactImage != null) contactImage,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  contactAlias,
+                  style: const TextStyle(fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
         body: const Center(child: Text("User not authenticated.")),
       );
     }
 
     if (_chatRoomId == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
+        appBar: AppBar(
+          title: Row(
+            children: [
+              if (contactImage != null) contactImage,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  contactAlias,
+                  style: const TextStyle(fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_chatRoomId == 'error_room') {
       return Scaffold(
-        appBar: AppBar(title: Text(contactAlias)),
+        appBar: AppBar(
+          title: Row(
+            children: [
+              if (contactImage != null) contactImage,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  contactAlias,
+                  style: const TextStyle(fontSize: 20),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
         body: const Center(child: Text("Failed to initialize chat room.")),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          contactAlias,
-          style: const TextStyle(fontSize: 20), // Increased font size
+        title: Row(
+          children: [
+            if (contactImage != null) contactImage,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                contactAlias,
+                style: const TextStyle(fontSize: 20),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(

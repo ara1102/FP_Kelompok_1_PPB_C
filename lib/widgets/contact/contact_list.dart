@@ -71,12 +71,14 @@ class ContactList extends StatelessWidget {
                       .get(),
               builder: (context, userSnapshot) {
                 String displayName = alias;
+                String imageUrl = '';
                 if (userSnapshot.connectionState == ConnectionState.done &&
                     userSnapshot.hasData &&
                     userSnapshot.data!.exists) {
                   final userData =
                       userSnapshot.data!.data() as Map<String, dynamic>;
                   displayName = userData['username'] ?? alias;
+                  imageUrl = userData['image'] ?? '';
                 }
 
                 // Now that ContactCard and ChatScreen accept Map<String, dynamic>,
@@ -87,6 +89,7 @@ class ContactList extends StatelessWidget {
                   'username':
                       displayName, // Use the fetched username for display
                   'addedAt': contactData['addedAt'],
+                  'profileImageUrl': imageUrl, // Include the profile image URL
                 };
 
                 return ContactCard(
