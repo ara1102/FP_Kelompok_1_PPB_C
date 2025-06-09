@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_delete.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/contact/contact_edit_form.dart';
 
@@ -12,7 +15,7 @@ class ContactCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Access data directly from the map
     var alias = contact['alias'] ?? '';
-    var profileImageUrl = contact['profileImageUrl'] as String?;
+    var profileImageUrl = contact['profileImageUrl'];
     // final String contactUserId =
     //     contact['id']; // Get the actual userId of the contact
 
@@ -30,11 +33,15 @@ class ContactCard extends StatelessWidget {
       ),
     );
 
-    if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+    Uint8List? imageProfile = Base64toImage.convert(profileImageUrl);
+    
+    if (profileImageUrl != null &&
+        profileImageUrl.isNotEmpty &&
+        imageProfile != null) {
       contactImage = ClipRRect(
         borderRadius: BorderRadius.circular(25.0),
-        child: Image.network(
-          profileImageUrl,
+        child: Image.memory(
+          imageProfile,
           width: 50,
           height: 50,
           fit: BoxFit.cover,

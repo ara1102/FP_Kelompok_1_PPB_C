@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
 // import 'package:firebase_core/firebase_core.dart';
 
 class AuthService {
@@ -50,16 +51,42 @@ class AuthService {
 
   Future updateProfileImage(ui.Image? image) async {
     final currentUser = _auth.currentUser;
-    if (currentUser == null) return;
-    if (image == null) {
-      await _db.collection('Users').doc(currentUser.uid).update({'image': ''});
+    if (currentUser == null) {
+      print('User not logged in');
       return;
     }
-    final base64Image = await ImagetoBase64.convert(image);
 
-    await _db.collection('Users').doc(currentUser.uid).update({
-      'image': base64Image,
-    });
+    if (image == null) {
+      try {
+        await _db.collection('Users').doc(currentUser.uid).update({
+          'image': '',
+        });
+        print('Image field cleared');
+      } catch (e) {
+        print('Error clearing image field: $e');
+      }
+      return;
+    }
+
+    try {
+      final base64Image = await ImagetoBase64.convert(image);
+      print('Base64 length: ${base64Image.length} bytes');
+      print('Base64 Image length: ${base64Image.length}');
+      await _db.collection('Users').doc(currentUser.uid).update({
+        'image': base64Image,
+      });
+      print('Image updated successfully');
+    } catch (e) {
+      print('Error updating image: $e');
+    }
+  }
+
+  Future<String> getImageBase64(String userId) async {
+    final doc = await _db.collection('Users').doc(userId).get();
+    if (doc.exists && doc.data() != null) {
+      return doc.data()!['image'] ?? '';
+    }
+    return '';
   }
 
   Future<String> registerEmail(
@@ -157,7 +184,10 @@ class ImageValidator {
 
   /// Validasi ekstensi format gambar
   static bool validateImageFormat(File imageFile) {
-    final String extension = path.extension(imageFile.path).toLowerCase().replaceAll('.', '');
+    final String extension = path
+        .extension(imageFile.path)
+        .toLowerCase()
+        .replaceAll('.', '');
     return allowedFormats.contains(extension);
   }
 
@@ -187,15 +217,35 @@ class Base64toImage {
 }
 
 class ImagetoBase64 {
-  static Future<String> convert(ui.Image image) async {
+  static Future<String> convert(ui.Image image, {int maxWidth = 800}) async {
     if (image.width <= 0 || image.height <= 0) {
       return '';
     }
+
+    // Ambil ByteData RGBA dari ui.Image
     final ByteData? byteData = await image.toByteData(
-      format: ui.ImageByteFormat.png,
+      format: ui.ImageByteFormat.rawRgba,
     );
     if (byteData == null) return '';
-    final Uint8List bytes = byteData.buffer.asUint8List();
-    return base64Encode(bytes);
+
+    // Buat image package Image dari raw bytes RGBA
+    final img.Image baseImage = img.Image.fromBytes(
+      width: image.width,
+      height: image.height,
+      bytes: byteData.buffer,
+      order: img.ChannelOrder.rgba, // karena pakai ui.ImageByteFormat.rawRgba
+    );
+
+    // Resize image jika lebarnya lebih dari maxWidth
+    img.Image resizedImage = baseImage;
+    if (image.width > maxWidth) {
+      resizedImage = img.copyResize(baseImage, width: maxWidth);
+    }
+
+    // Encode ke PNG (compressed)
+    final List<int> pngBytes = img.encodePng(resizedImage);
+
+    // Convert ke base64
+    return base64Encode(pngBytes);
   }
 }
