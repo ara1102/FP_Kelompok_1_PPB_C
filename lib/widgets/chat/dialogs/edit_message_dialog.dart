@@ -1,6 +1,5 @@
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart';
 
 class EditMessageDialog {
   static void show(

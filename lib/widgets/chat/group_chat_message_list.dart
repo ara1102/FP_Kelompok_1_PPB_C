@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/group_chat_service.dart';
-import 'package:fp_kelompok_1_ppb_c/services/group_service.dart'; // For Group model
 
 class GroupChatMessageList extends StatelessWidget {
   final ChatUser currentUser;
