@@ -1,10 +1,13 @@
-import 'dart:typed_data';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
-import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart'; // Import ChatService
+import 'package:fp_kelompok_1_ppb_c/services/chat_service.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/chat_app_bar.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/chat_message_list.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/confirm_delete_dialog.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/edit_message_dialog.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/message_options_dialog.dart';
+import 'package:fp_kelompok_1_ppb_c/widgets/chat/contact_avatar.dart'; // New import
 
 class ChatScreen extends StatefulWidget {
   final Map<String, dynamic> contact; // Changed to Map<String, dynamic>
@@ -17,8 +20,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late String contactAlias;
   late String contactId; // This will be the actual userId of the contact
-
-  late Widget contactImage;
+  late String contactProfileImageBase64;
 
   late ChatUser _currentUser;
   late ChatUser _otherUser;
@@ -30,51 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     contactAlias = widget.contact['alias'] ?? 'Contact';
     contactId = widget.contact['id']; // Get the actual userId from the map
-
-    Uint8List? imageProfile = Base64toImage.convert(
-      widget.contact['profileImageUrl'],
-    );
-
-    contactImage = Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.deepPurple[50], // Background color of the icon
-        borderRadius: BorderRadius.circular(25.0), // Apply rounded corners
-      ),
-      child: const Icon(
-        Icons.person,
-        size: 30, // Set the icon size to fit within the rectangle
-        color: Colors.deepPurple, // You can change the color of the icon
-      ),
-    );
-
-    if (imageProfile != null && imageProfile.isNotEmpty) {
-      contactImage = ClipRRect(
-        borderRadius: BorderRadius.circular(25.0),
-        child: Image.memory(
-          imageProfile,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[50],
-                borderRadius: BorderRadius.circular(25.0),
-              ),
-              child: const Icon(
-                Icons.people,
-                size: 24,
-                color: Colors.deepPurple,
-              ),
-            );
-          },
-        ),
-      );
-    }
+    contactProfileImageBase64 = widget.contact['profileImageUrl'];
 
     final firebaseUser = AuthService.instance.getCurrentUser();
     if (firebaseUser == null) {
@@ -96,18 +54,48 @@ class _ChatScreenState extends State<ChatScreen> {
     _currentUser = ChatUser(
       id: firebaseUser.uid,
       firstName: firebaseUser.displayName ?? firebaseUser.email ?? 'You',
+      customProperties: {}, // Initialize as empty map
     );
 
     _otherUser = ChatUser(
       id: contactId,
       firstName: contactAlias,
       // profileImage: contactData['profileImageUrl'],
+      customProperties: {'base64Image': contactProfileImageBase64},
     );
 
+    _fetchCurrentUserProfileImage(); // Fetch current user's profile image
     _initializeChatRoom(); // Call async method to initialize chat room
   }
 
   String? _chatRoomId; // Made nullable
+
+  Future<void> _fetchCurrentUserProfileImage() async {
+    try {
+      final currentUserImageBase64 = await AuthService.instance.getImageBase64(
+        _currentUser.id,
+      );
+      if (mounted) {
+        setState(() {
+          _currentUser = ChatUser(
+            id: _currentUser.id,
+            firstName: _currentUser.firstName,
+            customProperties: {'base64Image': currentUserImageBase64},
+          );
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error fetching current user profile image: ${e.toString()}',
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _initializeChatRoom() async {
     try {
@@ -152,328 +140,55 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _showEditDeleteDialog(ChatMessage message) {
-    if (message.user.id != _currentUser.id) {
-      // Only allow editing/deleting own messages
-      return;
-    }
-
-    final messageId = message.customProperties?['messageId'] as String?;
-    if (messageId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: Message ID not found.')),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Message Options'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit Message'),
-                onTap: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  _showEditMessageDialog(message, messageId);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete Message'),
-                onTap: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  _confirmDeleteMessage(messageId);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showEditMessageDialog(ChatMessage message, String messageId) {
-    final TextEditingController _editController = TextEditingController(
-      text: message.text,
-    );
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit Message'),
-          content: TextField(
-            controller: _editController,
-            decoration: const InputDecoration(hintText: 'Enter new message'),
-            maxLines: null, // Allow multiline input
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                final newText = _editController.text.trim();
-                if (newText.isNotEmpty) {
-                  try {
-                    await _chatService.editMessage(
-                      _chatRoomId!,
-                      messageId,
-                      newText,
-                    );
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Message edited.')),
-                      );
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Error editing message: ${e.toString()}',
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                } else {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Message cannot be empty.')),
-                    );
-                  }
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _confirmDeleteMessage(String messageId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Message'),
-          content: const Text('Are you sure you want to delete this message?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                try {
-                  await _chatService.deleteMessage(_chatRoomId!, messageId);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Message deleted.')),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Error deleting message: ${e.toString()}',
-                        ),
-                      ),
-                    );
-                  }
-                }
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    Widget bodyContent;
     if (_currentUser.id == 'error_user') {
-      return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              if (contactImage != null) contactImage,
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  contactAlias,
-                  style: const TextStyle(fontSize: 20),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: const Center(child: Text("User not authenticated.")),
+      bodyContent = const Center(child: Text("User not authenticated."));
+    } else if (_chatRoomId == null) {
+      bodyContent = const Center(child: CircularProgressIndicator());
+    } else if (_chatRoomId == 'error_room') {
+      bodyContent = const Center(
+        child: Text("Failed to initialize chat room."),
       );
-    }
-
-    if (_chatRoomId == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              if (contactImage != null) contactImage,
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  contactAlias,
-                  style: const TextStyle(fontSize: 20),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_chatRoomId == 'error_room') {
-      return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              if (contactImage != null) contactImage,
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  contactAlias,
-                  style: const TextStyle(fontSize: 20),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: const Center(child: Text("Failed to initialize chat room.")),
+    } else {
+      bodyContent = ChatMessageList(
+        currentUser: _currentUser,
+        otherUser: _otherUser,
+        chatRoomId: _chatRoomId!,
+        onSend: _onSend,
+        onLongPressMessage: (message) {
+          MessageOptionsDialog.show(
+            context,
+            message,
+            _currentUser.id,
+            (msg, msgId) => EditMessageDialog.show(
+              context,
+              msg,
+              msgId,
+              _chatRoomId!,
+              _chatService.editMessage, // Pass the specific function
+            ),
+            (msgId) => ConfirmDeleteDialog.show(
+              context,
+              msgId,
+              _chatRoomId!,
+              _chatService.deleteMessage, // Pass the specific function
+            ),
+          );
+        },
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            if (contactImage != null) contactImage,
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                contactAlias,
-                style: const TextStyle(fontSize: 20),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+      appBar: ChatAppBar(
+        contactImage: ContactAvatar(
+          profileImageUrl: widget.contact['profileImageUrl'],
+          size: 40, // Adjust size as needed
         ),
+        contactAlias: contactAlias,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _chatService.getChatMessages(
-          _chatRoomId!,
-        ), // Use ! because we've checked for null
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error.toString()}'));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          List<ChatMessage> displayMessages = [];
-          if (snapshot.hasData) {
-            displayMessages =
-                snapshot.data!.docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  final senderId = data['senderId'] as String;
-                  final text = data['text'] as String;
-                  final timestamp =
-                      (data['timestamp'] as Timestamp?)?.toDate() ??
-                      DateTime.now();
-                  final messageId = doc.id; // Get the message ID
-                  final isEdited =
-                      data['edited'] as bool? ?? false; // Get edited status
-
-                  return ChatMessage(
-                    user:
-                        (senderId == _currentUser.id)
-                            ? _currentUser
-                            : _otherUser,
-                    text: text,
-                    createdAt: timestamp,
-                    customProperties: {
-                      'messageId': messageId,
-                      'edited': isEdited,
-                    },
-                  );
-                }).toList();
-            // DashChat expects messages in reverse chronological order (newest first)
-            displayMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          }
-
-          return DashChat(
-            currentUser: _currentUser,
-            onSend: _onSend,
-            messages: displayMessages,
-            messageOptions: MessageOptions(
-              showCurrentUserAvatar: true,
-              showOtherUsersAvatar: true,
-              showOtherUsersName: true, // Disable default name display
-              messageTextBuilder: (message, previousMessage, nextMessage) {
-                final bool isMyMessage = message.user.id == _currentUser.id;
-                final bool isEdited =
-                    message.customProperties?['edited'] as bool? ?? false;
-
-                return GestureDetector(
-                  onLongPress: () => _showEditDeleteDialog(message),
-                  child: Column(
-                    crossAxisAlignment:
-                        isMyMessage
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        message.text,
-                        style: TextStyle(
-                          color: isMyMessage ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      if (isEdited)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 4.0),
-                          child: Text(
-                            'Edited',
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
+      body: bodyContent,
     );
   }
 }
