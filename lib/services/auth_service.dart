@@ -95,6 +95,16 @@ class AuthService {
     String username,
   ) async {
     try {
+      // Validasi username terlebih dahulu sebelum membuat akun
+      final usernameExists = await _checkUsernameExists(username);
+      if (usernameExists) {
+        // Throw FirebaseAuthException untuk konsistensi dengan Firebase error lainnya
+        throw FirebaseAuthException(
+          code: 'username-already-in-use',
+          message: 'Username is already taken',
+        );
+      }
+
       final response = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -107,9 +117,57 @@ class AuthService {
       await updateUsername(username, response.user!);
       return response.user?.uid ?? '';
     } on FirebaseAuthException {
-      rethrow; // Re-throw Firebase specific exceptions
+      rethrow; // Re-throw Firebase specific exceptions (termasuk custom username error)
     } catch (e) {
-      throw Exception('Failed to register: $e'); // Generic error
+      // Convert generic errors ke FirebaseAuthException untuk konsistensi
+      throw FirebaseAuthException(
+        code: 'registration-failed',
+        message: 'Registration failed: ${e.toString()}',
+      );
+    }
+  }
+
+  // Method untuk mengecek apakah username sudah ada
+  Future<bool> _checkUsernameExists(String username) async {
+    try {
+      final querySnapshot =
+          await _db
+              .collection('Users')
+              .where('username', isEqualTo: username)
+              .limit(1)
+              .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } on FirebaseException catch (e) {
+      // Error spesifik Firestore
+      throw FirebaseAuthException(
+        code: 'database-error',
+        message: 'Failed to check username availability: ${e.message}',
+      );
+    } catch (e) {
+      // Error umum lainnya
+      throw FirebaseAuthException(
+        code: 'network-error',
+        message: 'Network error while checking username: ${e.toString()}',
+      );
+    }
+  }
+
+  // Utility method untuk handle error message di UI
+  String getAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'The email address is already in use by another account.';
+      case 'username-already-in-use':
+        return 'Username is already taken. Please choose another one.';
+      case 'database-error':
+        return 'Database connection error. Please try again.';
+      case 'network-error':
+        return 'Network error. Please check your connection.';
+      case 'registration-failed':
+        return e.message ?? 'Registration failed. Please try again.';
+      default:
+        return e.message ?? 'An unexpected error occurred.';
     }
   }
 
