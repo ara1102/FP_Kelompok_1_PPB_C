@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/services/group_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/group/group_settings_dialog.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/group/group_details_page.dart'; // import new dialog
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
+import 'package:fp_kelompok_1_ppb_c/services/image_service.dart';
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
 
 class GroupCard extends StatelessWidget {
   final Group groupModel;
@@ -14,6 +16,12 @@ class GroupCard extends StatelessWidget {
     final name = groupModel.groupName;
     final members = groupModel.members;
     final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final groupImage = groupModel.groupImage;
+
+    Uint8List? imageProfile;
+    if (groupImage != null && groupImage.isNotEmpty) {
+      imageProfile = Base64toImage.convert(groupImage);
+    }
 
     return GestureDetector(
       onTap: () {
@@ -40,9 +48,19 @@ class GroupCard extends StatelessWidget {
         ),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          leading: CircleAvatar(
-            backgroundColor: Colors.blueAccent.withOpacity(0.1),
-            child: const Icon(Icons.group, color: Colors.blueAccent),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(25.0),
+            child: imageProfile != null
+                ? Image.memory(
+              imageProfile,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return _fallbackGroupIcon();
+              },
+            )
+                : _fallbackGroupIcon(),
           ),
           title: Text(
             name,
@@ -73,4 +91,20 @@ class GroupCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _fallbackGroupIcon() {
+  return Container(
+    width: 50,
+    height: 50,
+    decoration: BoxDecoration(
+      color: Colors.blueAccent.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(25.0),
+    ),
+    child: const Icon(
+      Icons.group,
+      color: Colors.blueAccent,
+      size: 30,
+    ),
+  );
 }

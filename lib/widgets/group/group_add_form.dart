@@ -25,6 +25,7 @@ class GroupAddForm extends StatelessWidget {
               groupName: groupName,
               creatorId: currentUserId,
               contactUserIds: memberIds,
+              adminIds: adminIds,
             );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Group "$groupName" created!')),
@@ -42,6 +43,7 @@ class GroupAddForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: 'group-fab',
       onPressed: () => _openCreateGroupDialog(context),
       child: const Icon(Icons.group_add),
       tooltip: 'Create Group',
