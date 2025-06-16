@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_image_form.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/profile/profile_logout.dart';
+import 'package:fp_kelompok_1_ppb_c/services/image_service.dart';
 
 class ProfileWidget extends StatelessWidget {
   const ProfileWidget({super.key});

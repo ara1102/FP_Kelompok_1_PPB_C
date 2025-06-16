@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
 import 'package:fp_kelompok_1_ppb_c/services/group_service.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/group/group_card.dart';
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
 
 class GroupList extends StatelessWidget {
   const GroupList({super.key});

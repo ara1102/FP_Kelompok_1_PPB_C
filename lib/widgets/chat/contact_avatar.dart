@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart'; // For Base64toImage
+import 'package:fp_kelompok_1_ppb_c/services/image_service.dart';
 
 class ContactAvatar extends StatelessWidget {
   final String? profileImageUrl;

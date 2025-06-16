@@ -1,60 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-class Group {
-  final String id;
-  final String groupName;
-  final String createdBy;
-  final DateTime? createdAt;
-  final List<String> members;
-  final List<String> admins;
-
-  Group({
-    required this.id,
-    required this.groupName,
-    required this.createdBy,
-    required this.members,
-    required this.admins,
-    this.createdAt,
-  });
-
-  factory Group.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
-    return Group(
-      id: doc.id,
-      groupName: data['groupName'] ?? '',
-      createdBy: data['createdBy'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      members: List<String>.from(data['members'] ?? []),
-      admins: List<String>.from(data['admins'] ?? []),
-    );
-  }
-
-  Map<String, dynamic> toDoc() {
-    return {
-      'groupName': groupName,
-      'createdBy': createdBy,
-      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
-      'members': members,
-      'admins': admins,
-    };
-  }
-}
+import 'package:fp_kelompok_1_ppb_c/services/image_service.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'package:fp_kelompok_1_ppb_c/models/contact.dart';
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
+import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
+import 'package:fp_kelompok_1_ppb_c/services/contact_service.dart';
 
 class GroupService {
   static final GroupService _instance = GroupService();
   static GroupService get instance => _instance;
 
   final _firestore = FirebaseFirestore.instance;
+  final _authService = AuthService();
+  final _contactService = ContactService();
 
-  // Create Group
   Future<String> createGroup({
     required String groupName,
     required String creatorId,
     required List<String> contactUserIds,
+    required List<String> adminIds,
+    ui.Image? groupImage,
   }) async {
     final allMembers = [...contactUserIds, creatorId];
-    final allAdmins = [creatorId];
+    final allAdmins = adminIds.contains(creatorId)
+        ? adminIds
+        : [...adminIds, creatorId];
+
+    String? base64Image;
+    if (groupImage != null) {
+      base64Image = await ImagetoBase64.convert(groupImage);
+    }
 
     final groupData = {
       'groupName': groupName,
@@ -62,6 +38,7 @@ class GroupService {
       'createdAt': FieldValue.serverTimestamp(),
       'members': allMembers,
       'admins': allAdmins,
+      'groupImage': base64Image ?? '',
     };
 
     final groupDoc = await _firestore.collection('Groups').add(groupData);
@@ -126,6 +103,7 @@ class GroupService {
     String? newGroupName,
     List<String>? newMembers,
     List<String>? newAdmins,
+    ui.Image? groupImage,
   }) async {
     final groupRef = _firestore.collection('Groups').doc(groupId);
     final groupSnapshot = await groupRef.get();
@@ -203,7 +181,108 @@ class GroupService {
     if (afterMembers.isEmpty) {
       await groupRef.delete();
     }
-
   }
 
+  Future updateGroupImage({
+    required String groupId,
+    required String userId,
+    ui.Image? image,
+  }) async {
+    final groupRef = _firestore.collection('Groups').doc(groupId);
+    final groupSnapshot = await groupRef.get();
+
+    if (!groupSnapshot.exists) {
+      throw Exception('Group does not exist');
+    }
+
+    try {
+      String imageData = '';
+      if (image != null) {
+        imageData = await ImagetoBase64.convert(image);
+        print('Group image Base64 length: ${imageData.length} bytes');
+      }
+
+      await groupRef.update({
+        'groupImage': imageData,
+      });
+      print('Group image updated successfully');
+    } catch (e) {
+      print('Error updating group image: $e');
+      throw Exception('Failed to update group image: $e');
+    }
+  }
+
+  Future<String> getGroupImageBase64(String groupId) async {
+    try {
+      final doc = await _firestore.collection('Groups').doc(groupId).get();
+      if (doc.exists && doc.data() != null) {
+        return doc.data()!['groupImage'] ?? '';
+      }
+      return '';
+    } catch (e) {
+      print('Error getting group image: $e');
+      return '';
+    }
+  }
+
+  Future<Map<String, Contact>> fetchGroupMemberProfiles({
+    required List<String> memberIds,
+    required String currentUserId,
+  }) async {
+    final Map<String, Contact> result = {};
+    dynamic currentUserData;
+
+    for (final userId in memberIds) {
+      if (userId == currentUserId) {
+        currentUserData = await _authService.getUserProfile();
+        final profileImageBase64 = await _authService.getImageBase64(userId);
+        final profileImage = Base64toImage.convert(profileImageBase64);
+        result[userId] = Contact(
+          'self_$userId',
+          userId,
+          currentUserData['username'],
+          'Me',
+          profileImage,
+        );
+        continue;
+      };
+
+      try {
+        try {
+          final contactDetails = await _contactService.getContactDetails(
+            currentUserId,
+            userId,
+          );
+          final profileImageBase64 =
+          await _authService.getImageBase64(contactDetails['id']);
+          final profileImage = Base64toImage.convert(profileImageBase64);
+
+          result[userId] = Contact(
+            contactDetails['id'],
+            contactDetails['userId'],
+            contactDetails['username'],
+            contactDetails['alias'],
+            profileImage,
+          );
+          continue;
+        } catch (_) {
+
+        }
+
+        // Unknown contact
+        final username = await _instance.getUsernameByUserId(userId);
+        result[userId] = Contact(
+          'unknown_$userId',
+          userId,
+          username,
+          'Not In Contacts',
+          Uint8List(0),
+        );
+      } catch (e) {
+        print('Error loading profile for $userId: $e');
+      }
+    }
+
+    return result;
+  }
 }

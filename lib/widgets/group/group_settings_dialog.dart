@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/group/group_dialog.dart';
 import 'package:fp_kelompok_1_ppb_c/services/group_service.dart';
 import 'package:fp_kelompok_1_ppb_c/services/auth_service.dart';
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
 
 class GroupSettingsDialog extends StatelessWidget {
   final Group group;
@@ -63,8 +64,6 @@ class GroupSettingsDialog extends StatelessWidget {
     void openEditDialog() async {
       Navigator.pop(context); // Close the settings dialog
 
-      final currentUserId = AuthService.instance.getCurrentUserId();
-
       if (!group.admins.contains(currentUserId)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Only group admins can edit the group')),
@@ -76,10 +75,12 @@ class GroupSettingsDialog extends StatelessWidget {
         context: context,
         builder:
             (_) => GroupDialog(
+              initialGroupId: group.id,
               currentUserId: currentUserId,
               initialGroupName: group.groupName,
               initialMembers: group.members,
               initialAdmins: group.admins,
+              initialGroupImage: group.groupImage,
               onSubmit: (updatedName, updatedMembers, updatedAdmins) async {
                 try {
                   await GroupService().updateGroup(
