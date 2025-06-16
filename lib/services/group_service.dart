@@ -285,6 +285,4 @@ class GroupService {
 
     return result;
   }
-
-
 }

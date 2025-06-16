@@ -1,4 +1,3 @@
-// Image lib
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -7,7 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
 
 class ImageValidator {
-  static const int maxSizeInBytes = 400 * 1024; // 400 KB
+  static const int maxSizeInBytes = 10 * 1024 * 1024; // 10 MB
   static const List<String> allowedFormats = ['jpg', 'jpeg', 'png'];
 
   /// Validasi ukuran file gambar
@@ -32,7 +31,7 @@ class ImageValidator {
     }
 
     if (!await validateImageSize(imageFile)) {
-      return 'Ukuran gambar melebihi 400KB.';
+      return 'Ukuran gambar melebihi 10MB.';
     }
 
     return null; // valid
@@ -51,7 +50,11 @@ class Base64toImage {
 }
 
 class ImagetoBase64 {
-  static Future<String> convert(ui.Image image, {int maxWidth = 800}) async {
+  static Future<String> convert(
+      ui.Image image, {
+        int maxWidth = 800,
+        int maxBase64SizeBytes = 1024 * 1024,
+      }) async {
     if (image.width <= 0 || image.height <= 0) {
       return '';
     }
@@ -76,10 +79,47 @@ class ImagetoBase64 {
       resizedImage = img.copyResize(baseImage, width: maxWidth);
     }
 
-    // Encode ke PNG (compressed)
-    final List<int> pngBytes = img.encodePng(resizedImage);
+    // Mulai dengan kualitas tinggi dan turunkan secara bertahap
+    int quality = 90;
+    String base64Result = '';
 
-    // Convert ke base64
-    return base64Encode(pngBytes);
+    while (quality >= 10) {
+      List<int> compressedBytes;
+
+      // Gunakan JPEG untuk kompresi yang lebih baik
+      if (quality < 90) {
+        compressedBytes = img.encodeJpg(resizedImage, quality: quality);
+      } else {
+        // Coba PNG terlebih dahulu dengan kualitas tinggi
+        compressedBytes = img.encodePng(resizedImage);
+      }
+
+      // Convert ke base64
+      base64Result = base64Encode(compressedBytes);
+
+      // Cek ukuran base64 (dalam bytes, bukan karakter)
+      final int base64SizeBytes = base64Result.length;
+
+      if (base64SizeBytes <= maxBase64SizeBytes) {
+        break;
+      }
+
+      // Jika masih terlalu besar, kurangi kualitas atau resize lebih lanjut
+      if (quality > 10) {
+        quality -= 10;
+      } else {
+        // Jika kualitas sudah minimum, resize gambar lebih kecil
+        final int newWidth = (resizedImage.width * 0.8).round();
+        if (newWidth > 100) {
+          // Jangan terlalu kecil
+          resizedImage = img.copyResize(resizedImage, width: newWidth);
+          quality = 60; // Reset kualitas
+        } else {
+          break; // Sudah tidak bisa dikecilkan lagi
+        }
+      }
+    }
+
+    return base64Result;
   }
 }

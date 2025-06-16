@@ -9,6 +9,7 @@ import 'package:fp_kelompok_1_ppb_c/widgets/chat/group_chat_message_list.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/confirm_delete_dialog.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/edit_message_dialog.dart';
 import 'package:fp_kelompok_1_ppb_c/widgets/chat/dialogs/message_options_dialog.dart';
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
 
 class GroupChatScreen extends StatefulWidget {
   final Group group; // Pass the Group object

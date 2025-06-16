@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:image/image.dart' as img;
+import 'package:fp_kelompok_1_ppb_c/services/image_service.dart';
 
 class ProfileImageForm extends StatefulWidget {
   final Uint8List image;

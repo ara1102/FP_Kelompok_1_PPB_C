@@ -9,7 +9,7 @@ import 'package:fp_kelompok_1_ppb_c/pages/home.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/login.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/register.dart';
 import 'package:fp_kelompok_1_ppb_c/pages/group_chat_screen.dart';
-import 'package:fp_kelompok_1_ppb_c/services/group_service.dart'; // Import Group model
+import 'package:fp_kelompok_1_ppb_c/models/group.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
