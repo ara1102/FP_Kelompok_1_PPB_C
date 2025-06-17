@@ -62,13 +62,13 @@ class ProfileWidget extends StatelessWidget {
                               width: 200,
                               height: 200,
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple[50],
+                                color: const Color(0xFFFFE4BD),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
                                 Icons.person,
                                 size: 100,
-                                color: Colors.deepPurple,
+                                color: Color(0xFFF4A44A),
                               ),
                             );
                           },

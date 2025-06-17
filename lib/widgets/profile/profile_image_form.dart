@@ -118,7 +118,12 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
                             )
                             : const CircleAvatar(
                               radius: 60,
-                              child: Icon(Icons.person, size: 40),
+                              backgroundColor: Color(0xFFFFE4BD),
+                              child: Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Color(0xFFF4A44A),
+                              ),
                             ),
                   ),
                   const SizedBox(height: 16),
@@ -147,13 +152,13 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
                   if (_image != null)
                     ElevatedButton.icon(
                       onPressed: localLoading ? null : _removeImage,
-                      icon: Icon(Icons.delete, color: Colors.deepPurple[50]),
+                      icon: Icon(Icons.delete, color: Color(0xFFFFF4E5)),
                       label: Text(
                         'Hapus Foto Profil',
-                        style: TextStyle(color: Colors.deepPurple[50]),
+                        style: TextStyle(color: Color(0xFFFFF4E5)),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Color(0xFFF4A44A),
                       ),
                     ),
                 ],
@@ -220,12 +225,12 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.deepPurple,
+            color: Color(0xFFF4A44A),
             shape: BoxShape.circle,
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
           ),
           child: IconButton(
-            icon: Icon(Icons.edit, size: 20, color: Colors.deepPurple[50]),
+            icon: Icon(Icons.edit, size: 20, color: Colors.black),
             onPressed: _showPickImageDialog,
             tooltip: 'Edit Gambar',
           ),

@@ -39,7 +39,7 @@ class _GroupImageFormState extends State<GroupImageForm> {
       image.width,
       image.height,
       ui.PixelFormat.rgba8888,
-          (ui.Image img) {
+      (ui.Image img) {
         completer.complete(img);
       },
     );
@@ -81,7 +81,10 @@ class _GroupImageFormState extends State<GroupImageForm> {
                   });
                   _showOverlayMessage('Gambar berhasil dipilih');
                 } else {
-                  _showOverlayMessage('Tidak ada gambar yang dipilih', isError: true);
+                  _showOverlayMessage(
+                    'Tidak ada gambar yang dipilih',
+                    isError: true,
+                  );
                 }
               } catch (e) {
                 print('Error picking image: $e');
@@ -113,22 +116,27 @@ class _GroupImageFormState extends State<GroupImageForm> {
                       ],
                     ),
                     child:
-                    _tempImage != null
-                        ? CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.red[50],
-                      backgroundImage: FileImage(_tempImage!),
-                    )
-                        : _image != null
-                        ? CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.blue[50],
-                      backgroundImage: _image!.image,
-                    )
-                        : const CircleAvatar(
-                      radius: 60,
-                      child: Icon(Icons.person, size: 40),
-                    ),
+                        _tempImage != null
+                            ? CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.red[50],
+                              backgroundImage: FileImage(_tempImage!),
+                            )
+                            : _image != null
+                            ? CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.blue[50],
+                              backgroundImage: _image!.image,
+                            )
+                            : const CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Color(0xFFFFE4BD),
+                              child: Icon(
+                                Icons.person,
+                                color: Color(0xFFF4A44A),
+                                size: 40,
+                              ),
+                            ),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -136,17 +144,17 @@ class _GroupImageFormState extends State<GroupImageForm> {
                     children: [
                       ElevatedButton.icon(
                         onPressed:
-                        localLoading
-                            ? null
-                            : () => _pickImage(ImageSource.gallery),
+                            localLoading
+                                ? null
+                                : () => _pickImage(ImageSource.gallery),
                         icon: const Icon(Icons.photo),
                         label: const Text('Galeri'),
                       ),
                       ElevatedButton.icon(
                         onPressed:
-                        localLoading
-                            ? null
-                            : () => _pickImage(ImageSource.camera),
+                            localLoading
+                                ? null
+                                : () => _pickImage(ImageSource.camera),
                         icon: const Icon(Icons.camera_alt),
                         label: const Text('Kamera'),
                       ),
@@ -156,13 +164,13 @@ class _GroupImageFormState extends State<GroupImageForm> {
                   if (_image != null)
                     ElevatedButton.icon(
                       onPressed: localLoading ? null : _removeImage,
-                      icon: Icon(Icons.delete, color: Colors.deepPurple[50]),
+                      icon: Icon(Icons.delete, color: Color(0xFFFFF4E5)),
                       label: Text(
                         'Hapus Foto Profil',
-                        style: TextStyle(color: Colors.deepPurple[50]),
+                        style: TextStyle(color: Color(0xFFFFF4E5)),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Color(0xFFF4A44A),
                       ),
                     ),
                 ],
@@ -173,37 +181,43 @@ class _GroupImageFormState extends State<GroupImageForm> {
                   child: const Text('Batal'),
                 ),
                 ElevatedButton(
-                  onPressed: localLoading ? null : () async {
-                    Uint8List? savedImageBytes;
+                  onPressed:
+                      localLoading
+                          ? null
+                          : () async {
+                            Uint8List? savedImageBytes;
 
-                    setState(() {
-                      _selectedImage = _tempImage;
-                    });
+                            setState(() {
+                              _selectedImage = _tempImage;
+                            });
 
-                    if (_selectedImage != null) {
-                      final bytes = await _selectedImage!.readAsBytes();
-                      final decodedImg = img.decodeImage(bytes);
-                      if (decodedImg != null) {
-                        final uiImage = await _convertToUiImage(decodedImg);
-                        await GroupService.instance.updateGroupImage(
-                          groupId: widget.groupId,
-                          userId: widget.userId,
-                          image: uiImage,
-                        );
-                        savedImageBytes = bytes; // Store the bytes that were saved
-                      }
-                    } else if (_image == null) {
-                      await GroupService.instance.updateGroupImage(
-                        groupId: widget.groupId,
-                        userId: widget.userId,
-                        image: null,
-                      );
-                      savedImageBytes = null; // Image was removed
-                    }
+                            if (_selectedImage != null) {
+                              final bytes = await _selectedImage!.readAsBytes();
+                              final decodedImg = img.decodeImage(bytes);
+                              if (decodedImg != null) {
+                                final uiImage = await _convertToUiImage(
+                                  decodedImg,
+                                );
+                                await GroupService.instance.updateGroupImage(
+                                  groupId: widget.groupId,
+                                  userId: widget.userId,
+                                  image: uiImage,
+                                );
+                                savedImageBytes =
+                                    bytes; // Store the bytes that were saved
+                              }
+                            } else if (_image == null) {
+                              await GroupService.instance.updateGroupImage(
+                                groupId: widget.groupId,
+                                userId: widget.userId,
+                                image: null,
+                              );
+                              savedImageBytes = null; // Image was removed
+                            }
 
-                    Navigator.of(context).pop();
-                    _showOverlayMessage('Perubahan disimpan');
-                  },
+                            Navigator.of(context).pop();
+                            _showOverlayMessage('Perubahan disimpan');
+                          },
                   child: const Text('Simpan'),
                 ),
               ],
@@ -219,48 +233,51 @@ class _GroupImageFormState extends State<GroupImageForm> {
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        top: MediaQuery.of(context).padding.top + 20,
-        left: 20,
-        right: 20,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isError ? Colors.red : Colors.green,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  isError ? Icons.error_outline : Icons.check_circle_outline,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    message,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+      builder:
+          (context) => Positioned(
+            top: MediaQuery.of(context).padding.top + 20,
+            left: 20,
+            right: 20,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isError ? Colors.red : Colors.green,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+                child: Row(
+                  children: [
+                    Icon(
+                      isError
+                          ? Icons.error_outline
+                          : Icons.check_circle_outline,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
 
     overlay.insert(overlayEntry);
@@ -279,12 +296,12 @@ class _GroupImageFormState extends State<GroupImageForm> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.deepPurple,
+            color: Color(0xFFF4A44A),
             shape: BoxShape.circle,
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
           ),
           child: IconButton(
-            icon: Icon(Icons.edit, size: 20, color: Colors.deepPurple[50]),
+            icon: Icon(Icons.edit, size: 20, color: Colors.black),
             onPressed: _showPickImageDialog,
             tooltip: 'Edit Gambar',
           ),

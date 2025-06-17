@@ -22,18 +22,18 @@ class ContactCard extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.deepPurple[50], // Background color of the icon
+        color: Color(0xFFFFE4BD), // Background color of the icon
         borderRadius: BorderRadius.circular(25.0), // Apply rounded corners
       ),
       child: const Icon(
         Icons.person,
         size: 30, // Set the icon size to fit within the rectangle
-        color: Colors.deepPurple, // You can change the color of the icon
+        color: Color(0xFFF4A44A), // You can change the color of the icon
       ),
     );
 
     Uint8List? imageProfile = Base64toImage.convert(profileImageUrl);
-    
+
     if (profileImageUrl != null &&
         profileImageUrl.isNotEmpty &&
         imageProfile != null) {
@@ -49,13 +49,13 @@ class ContactCard extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.deepPurple[50],
+                color: Color(0xFFFFE4BD),
                 borderRadius: BorderRadius.circular(25.0),
               ),
               child: const Icon(
                 Icons.people,
                 size: 30,
-                color: Colors.deepPurple,
+                color: Color(0xFFF4A44A),
               ),
             );
           },

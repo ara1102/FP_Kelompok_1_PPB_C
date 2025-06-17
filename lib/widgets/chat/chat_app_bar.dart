@@ -13,6 +13,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: const Color(0xFFF4A44A), // Warna hex F4A44A
       title: Row(
         children: [
           contactImage,
@@ -20,7 +21,10 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: Text(
               contactAlias,
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold, // Teks menjadi bold
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

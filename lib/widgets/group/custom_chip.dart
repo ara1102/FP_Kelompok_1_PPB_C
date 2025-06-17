@@ -35,9 +35,10 @@ class CustomChip extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 6),
               child: Tooltip(
-                message: isCreatorInCreateMode
-                    ? 'Group creator (Admin required)'
-                    : (isAdmin ? 'Remove Admin' : 'Make Admin'),
+                message:
+                    isCreatorInCreateMode
+                        ? 'Group creator (Admin required)'
+                        : (isAdmin ? 'Remove Admin' : 'Make Admin'),
                 child: GestureDetector(
                   onTap: isCreatorInCreateMode ? null : onToggleAdmin,
                   child: Icon(
@@ -45,9 +46,10 @@ class CustomChip extends StatelessWidget {
                         ? Icons.admin_panel_settings
                         : Icons.admin_panel_settings_outlined,
                     size: 18,
-                    color: isCreatorInCreateMode
-                        ? Colors.blue.shade700
-                        : (isAdmin ? Colors.blue : Colors.grey[600]),
+                    color:
+                        isCreatorInCreateMode
+                            ? Color(0xFFF4A44A)
+                            : (isAdmin ? Color(0xFFF4A44A) : Colors.grey[600]),
                   ),
                 ),
               ),

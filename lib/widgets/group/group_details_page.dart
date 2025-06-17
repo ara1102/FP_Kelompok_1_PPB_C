@@ -33,7 +33,8 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   Future<void> _initialize() async {
     _currentUserId = await _authService.getCurrentUserId();
 
-    if (widget.group.groupImage != null && widget.group.groupImage!.isNotEmpty) {
+    if (widget.group.groupImage != null &&
+        widget.group.groupImage!.isNotEmpty) {
       groupImage = Base64toImage.convert(widget.group.groupImage!);
     } else {
       groupImage = Uint8List(0);
@@ -43,7 +44,6 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
   }
 
   Future<void> _fetchUserProfiles() async {
-
     final memberMap = await _groupService.fetchGroupMemberProfiles(
       memberIds: widget.group.members,
       currentUserId: _currentUserId!,
@@ -73,7 +73,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -93,24 +93,30 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
             ),
             const SizedBox(height: 20),
 
-
             _sectionCard(
               title: 'Members (${widget.group.members.length})',
-              child: _isLoadingUsernames
-                  ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: widget.group.members.map((memberId) {
-                  final profile = _memberProfiles[memberId];
-                  final isAdmin = widget.group.admins.contains(memberId);
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: profile != null
-                        ? _userTile(profile, isAdmin: isAdmin)
-                        : Text(memberId),
-                  );
-                }).toList(),
-              ),
+              child:
+                  _isLoadingUsernames
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.group.members.map((memberId) {
+                              final profile = _memberProfiles[memberId];
+                              final isAdmin = widget.group.admins.contains(
+                                memberId,
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                child:
+                                    profile != null
+                                        ? _userTile(profile, isAdmin: isAdmin)
+                                        : Text(memberId),
+                              );
+                            }).toList(),
+                      ),
             ),
 
             const SizedBox(height: 24),
@@ -121,20 +127,19 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple.shade100,
+            backgroundColor: Color(0xFFF4A44A),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          icon: const Icon(Icons.chat_bubble),
-          label: const Text('Go to Chat', style: TextStyle(fontSize: 16)),
+          icon: const Icon(Icons.chat_bubble, color: Colors.black),
+          label: const Text(
+            'Go to Chat',
+            style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
           onPressed: () {
-            Navigator.pushNamed(
-              context,
-              '/groupChat',
-              arguments: widget.group,
-            );
+            Navigator.pushNamed(context, '/groupChat', arguments: widget.group);
           },
         ),
       ),
@@ -147,12 +152,15 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
       children: [
         CircleAvatar(
           radius: 18,
-          backgroundImage: (profile.profileImage != null && profile.profileImage!.isNotEmpty)
-              ? MemoryImage(profile.profileImage!)
-              : null,
-          child: (profile.profileImage == null || profile.profileImage!.isEmpty)
-              ? const Icon(Icons.person)
-              : null,
+          backgroundColor: const Color(0xFFFFE4BD),
+          backgroundImage:
+              (profile.profileImage != null && profile.profileImage!.isNotEmpty)
+                  ? MemoryImage(profile.profileImage!)
+                  : null,
+          child:
+              (profile.profileImage == null || profile.profileImage!.isEmpty)
+                  ? const Icon(Icons.person, color: Color(0xFFF4A44A))
+                  : null,
         ),
         const SizedBox(width: 10),
         Column(
@@ -160,20 +168,14 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
           children: [
             Text(
               profile.userName,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
                 if (profile.alias != profile.userName)
                   Text(
                     profile.alias,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 if (isAdmin) ...[
                   const SizedBox(width: 6),
@@ -181,7 +183,7 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
                     '(admin)',
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Colors.blueAccent,
+                      color: Color(0xFFF4A44A),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -194,13 +196,12 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
     );
   }
 
-
   Widget _sectionCard({required String title, required Widget child}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: Color(0xFFFFF4E5),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

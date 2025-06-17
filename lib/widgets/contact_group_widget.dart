@@ -13,7 +13,7 @@ class ContactAndGroupWidget extends StatelessWidget {
           Container(
             width: double.infinity, // Ensure full width
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: Colors.black,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.shade300, // Made shadow darker
@@ -32,7 +32,11 @@ class ContactAndGroupWidget extends StatelessWidget {
               ),
               child: Text(
                 'Contacts',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFFD494),
+                ),
               ),
             ),
           ),
@@ -42,7 +46,7 @@ class ContactAndGroupWidget extends StatelessWidget {
           Container(
             width: double.infinity, // Ensure full width
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: Colors.black,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.shade300, // Made shadow darker
@@ -61,7 +65,11 @@ class ContactAndGroupWidget extends StatelessWidget {
               ), // Added left padding
               child: Text(
                 'Groups',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFFD494),
+                ),
               ),
             ),
           ),

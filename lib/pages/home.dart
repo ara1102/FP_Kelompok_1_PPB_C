@@ -34,10 +34,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat App'), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF4A44A),
+        title: const Text(
+          'blaabber',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFFF4A44A),
         type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Color(0xFFFFF4E5),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: _navItems,

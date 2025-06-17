@@ -10,42 +10,46 @@ class GroupAddForm extends StatelessWidget {
     final currentUserId = AuthService.instance.getCurrentUserId();
     if (currentUserId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be logged in to create a group.')),
+        const SnackBar(
+          content: Text('You must be logged in to create a group.'),
+        ),
       );
       return;
     }
 
     showDialog(
       context: context,
-      builder: (_) => GroupDialog(
-        currentUserId: currentUserId,
-        onSubmit: (groupName, memberIds, adminIds) async {
-          try {
-            await GroupService().createGroup(
-              groupName: groupName,
-              creatorId: currentUserId,
-              contactUserIds: memberIds,
-              adminIds: adminIds,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Group "$groupName" created!')),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: $e')),
-            );
-          }
-        },
-      ),
+      builder:
+          (_) => GroupDialog(
+            currentUserId: currentUserId,
+            onSubmit: (groupName, memberIds, adminIds) async {
+              try {
+                await GroupService().createGroup(
+                  groupName: groupName,
+                  creatorId: currentUserId,
+                  contactUserIds: memberIds,
+                  adminIds: adminIds,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Group "$groupName" created!')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
+              }
+            },
+          ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: const Color(0xFFF4A44A),
       heroTag: 'group-fab',
       onPressed: () => _openCreateGroupDialog(context),
-      child: const Icon(Icons.group_add),
+      child: const Icon(Icons.group_add, color: Colors.black),
       tooltip: 'Create Group',
     );
   }

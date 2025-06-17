@@ -78,11 +78,18 @@ class _ContactEditFormState extends State<ContactEditForm> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: _handleSaveContact,
-              child: const Text('Save'),
+              style: ElevatedButton.styleFrom(overlayColor: Color(0xFFF4A44A)),
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Color(0xFFF4A44A)),
+              ),
             ),
           ],
         );
@@ -100,7 +107,7 @@ class _ContactEditFormState extends State<ContactEditForm> {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: _openEditDialog,
-      icon: const Icon(Icons.edit, color: Colors.deepPurple, size: 20.0),
+      icon: const Icon(Icons.edit, color: Color(0xFFF4A44A), size: 20.0),
     );
   }
 }

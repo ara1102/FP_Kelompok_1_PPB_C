@@ -111,15 +111,22 @@ class _ContactAddFormState extends State<ContactAddForm> {
                       : () {
                         Navigator.of(context).pop();
                       },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: localLoading ? null : _handleAddContact,
+              style: ElevatedButton.styleFrom(overlayColor: Color(0xFFF4A44A)),
               child:
                   localLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Add Contact'),
+                      : const Text(
+                        'Add Contact',
+                        style: TextStyle(color: Color(0xFFF4A44A)),
+                      ),
             ),
           ],
         ),

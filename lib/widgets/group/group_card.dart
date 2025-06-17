@@ -35,32 +35,36 @@ class GroupCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFFFFF4E5),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.15),
               spreadRadius: 1,
-              blurRadius: 6,
+              blurRadius: 4,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 4,
+          ),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(25.0),
-            child: imageProfile != null
-                ? Image.memory(
-              imageProfile,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return _fallbackGroupIcon();
-              },
-            )
-                : _fallbackGroupIcon(),
+            child:
+                imageProfile != null
+                    ? Image.memory(
+                      imageProfile,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _fallbackGroupIcon();
+                      },
+                    )
+                    : _fallbackGroupIcon(),
           ),
           title: Text(
             name,
@@ -71,19 +75,20 @@ class GroupCard extends StatelessWidget {
           ),
           subtitle: Text(
             'Members: ${members.length}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
           ),
           trailing: IconButton(
             icon: const Icon(Icons.settings, color: Colors.grey),
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (ctx) => GroupSettingsDialog(
-                  group: groupModel,
-                  currentUserId: currentUserId,
-                ),
+                builder:
+                    (ctx) => GroupSettingsDialog(
+                      group: groupModel,
+                      currentUserId: currentUserId,
+                    ),
               );
             },
           ),
@@ -98,13 +103,9 @@ Widget _fallbackGroupIcon() {
     width: 50,
     height: 50,
     decoration: BoxDecoration(
-      color: Colors.blueAccent.withOpacity(0.1),
+      color: Color(0xFFFFE4BD),
       borderRadius: BorderRadius.circular(25.0),
     ),
-    child: const Icon(
-      Icons.group,
-      color: Colors.blueAccent,
-      size: 30,
-    ),
+    child: const Icon(Icons.group, color: Color(0xFFF4A44A), size: 30),
   );
 }

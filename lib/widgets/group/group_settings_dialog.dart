@@ -39,12 +39,12 @@ class GroupSettingsDialog extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: Text('Cancel'),
+                  child: Text('Cancel', style: TextStyle(color: Colors.black)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: Text('Delete'),
+                  child: Text('Delete', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

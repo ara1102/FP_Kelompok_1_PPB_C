@@ -18,7 +18,10 @@ class ConfirmDeleteDialog {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -42,7 +45,10 @@ class ConfirmDeleteDialog {
                   }
                 }
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Color(0xFFF4A44A)),
+              ),
             ),
           ],
         );

@@ -19,9 +19,15 @@ class ProfileLogout extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('No'),
+                  child: const Text(
+                    'No',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    overlayColor: const Color(0xFFF4A44A),
+                  ),
                   onPressed: () async {
                     Navigator.pop(context); // Tutup dialog dulu
                     await AuthService.instance.logout();
@@ -29,7 +35,10 @@ class ProfileLogout extends StatelessWidget {
                       Navigator.of(context).pushReplacementNamed('login');
                     }
                   },
-                  child: const Text('Logout'),
+                  child: const Text(
+                    'Logout',
+                    style: TextStyle(color: Color(0xFFF4A44A)),
+                  ),
                 ),
               ],
             );

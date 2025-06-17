@@ -28,7 +28,10 @@ class EditMessageDialog {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -61,7 +64,10 @@ class EditMessageDialog {
                   }
                 }
               },
-              child: const Text('Save'),
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Color(0xFFF4A44A)),
+              ),
             ),
           ],
         );

@@ -7,7 +7,13 @@ class GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(title: Text(groupName, style: const TextStyle(fontSize: 20)));
+    return AppBar(
+      backgroundColor: const Color(0xFFF4A44A),
+      title: Text(
+        groupName,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 
   @override

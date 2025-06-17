@@ -10,6 +10,7 @@ class ContactContent extends StatelessWidget {
     return Scaffold(
       body: const ContactList(),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFF4A44A),
         onPressed: () {
           showDialog(
             context: context,
@@ -21,7 +22,7 @@ class ContactContent extends StatelessWidget {
             },
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.black),
       ),
     );
   }

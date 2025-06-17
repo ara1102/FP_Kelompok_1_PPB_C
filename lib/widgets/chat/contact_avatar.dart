@@ -35,13 +35,13 @@ class ContactAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.deepPurple[50],
+        color: Color(0xFFFFE4BD),
         borderRadius: BorderRadius.circular(size / 2),
       ),
       child: Icon(
         Icons.person,
         size: size * 0.6, // Adjust icon size relative to avatar size
-        color: Colors.deepPurple,
+        color: Color(0xFFF4A44A),
       ),
     );
   }
