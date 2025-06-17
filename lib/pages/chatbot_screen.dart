@@ -52,6 +52,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           ),
         ),
         messageOptions: const MessageOptions(
+          currentUserContainerColor: Color.fromARGB(1000, 255, 199, 96),
+          currentUserTextColor: Color.fromARGB(232, 0, 0, 0),
           showCurrentUserAvatar: true,
           showTime: true,
         ),

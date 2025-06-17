@@ -103,7 +103,7 @@
   <img src="img/chat.png" alt="Chat Screen" width="250"/>
   <img src="img/edit_message.png" alt="Edit Message" width="250"/>
   <img src="img/personalChat.png" alt="Personal Chat" width="250"/>
-  <img src="img/GeminiChat.png" alt="Gemini Chat" width="250"/>
+  <img src="img/Gemini.png" alt="Gemini Chat" width="250"/>
 </div>
 
 ## 🚀 Teknologi yang Digunakan
