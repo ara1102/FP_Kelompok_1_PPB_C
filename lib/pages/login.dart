@@ -88,19 +88,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.person),
                     labelText: 'Email',
                     labelStyle: const TextStyle(color: Color(0xFF333333)),
-                    filled: true,
-                    fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                   ),
                 ),
@@ -113,19 +120,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     labelText: 'Password',
                     labelStyle: const TextStyle(color: Color(0xFF333333)),
-                    filled: true,
-                    fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(color: Color(0xFF333333)),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
                     ),
                   ),
                 ),
@@ -143,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(
-                      0xFF333333,
+                      0xFF352424,
                     ), // Dark color from the image
                     foregroundColor: Colors.white,
                     minimumSize: const Size(
