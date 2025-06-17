@@ -73,34 +73,37 @@
 ## 📸 Screenshot
 
 ### 🧩 Splash and Auth
-<div style="display: flex; gap: 10px;">
-  <img src="img/splash (1).jpg" width="300"/>
-  <img src="img/Screenshot 2025-06-17 152648.png" width="300"/>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="img/Splash.jpg" alt="Splash Screen" width="250"/>
+  <img src="img/Login.png" alt="Login Screen" width="250"/>
+  <img src="img/Register.png" alt="Register Screen" width="250"/>
+</div>
+
+---
+
+### 🏠 Home Page
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="img/HomePage.png" alt="Home Page" width="250"/>
 </div>
 
 ---
 
 ### 📂 Group & Contact
-<div style="display: flex; gap: 10px;">
-  <img src="img/Screenshot 2025-06-17 152031.png" width="300"/>
-  <img src="img/editgroup.jpg" width="300"/>
-  <img src="img/Screenshot 2025-06-17 152125.png" width="300"/>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="img/EditContact.png" alt="Edit Contact" width="250"/>
+  <img src="img/EditGroup.png" alt="Edit Group" width="250"/>
+  <img src="img/GroupProfile.png" alt="Group Profile" width="250"/>
+  <img src="img/profile.png" alt="User Profile" width="250"/>
 </div>
 
 ---
 
 ### ✉️ Chat Interface
-<div style="display: flex; gap: 10px;">
-  <img src="img/Screenshot 2025-06-17 152049.png" width="300"/>
-  <img src="img/Screenshot 2025-06-17 152112.png" width="300"/>
-  <img src="img/Screenshot 2025-06-17 152200.png" width="300"/>
-</div>
-
----
-
-### ⚙️ Profile Settings
-<div style="display: flex; gap: 10px;">
-  <img src="img/Screenshot 2025-06-17 152209.png" width="300"/>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="img/chat.png" alt="Chat Screen" width="250"/>
+  <img src="img/edit_message.png" alt="Edit Message" width="250"/>
+  <img src="img/personalChat.png" alt="Personal Chat" width="250"/>
+  <img src="img/GeminiChat.png" alt="Gemini Chat" width="250"/>
 </div>
 
 ## 🚀 Teknologi yang Digunakan
