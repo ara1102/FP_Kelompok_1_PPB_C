@@ -62,9 +62,37 @@
 ---
 
 ## 📸 Screenshot
-![alt text](<img/Screenshot 2025-06-17 152648.png>)
-![alt text](<img/Screenshot 2025-06-17 152031.png>) ![alt text](<img/Screenshot 2025-06-17 152049.png>) ![alt text](<img/Screenshot 2025-06-17 152112.png>) ![alt text](<img/Screenshot 2025-06-17 152125.png>) ![alt text](<img/Screenshot 2025-06-17 152200.png>) ![alt text](<img/Screenshot 2025-06-17 152209.png>)
+
+### 🧩 Splash and Auth
+<div style="display: flex; gap: 10px;">
+  <img src="img/splash (1).jpg" width="300"/>
+  <img src="img/Screenshot 2025-06-17 152648.png" width="300"/>
+</div>
+
 ---
+
+### 📂 Group & Contact
+<div style="display: flex; gap: 10px;">
+  <img src="img/Screenshot 2025-06-17 152031.png" width="300"/>
+  <img src="img/editgroup.jpg" width="300"/>
+  <img src="img/Screenshot 2025-06-17 152125.png" width="300"/>
+</div>
+
+---
+
+### ✉️ Chat Interface
+<div style="display: flex; gap: 10px;">
+  <img src="img/Screenshot 2025-06-17 152049.png" width="300"/>
+  <img src="img/Screenshot 2025-06-17 152112.png" width="300"/>
+  <img src="img/Screenshot 2025-06-17 152200.png" width="300"/>
+</div>
+
+---
+
+### ⚙️ Profile Settings
+<div style="display: flex; gap: 10px;">
+  <img src="img/Screenshot 2025-06-17 152209.png" width="300"/>
+</div>
 
 ## 🚀 Teknologi yang Digunakan
 - **Firebase** (Authentication dan Firestore)
