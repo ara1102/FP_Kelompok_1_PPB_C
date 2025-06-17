@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'), centerTitle: true),
+      backgroundColor: const Color(0xFFFFC760), // Orange color from the image
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -69,18 +69,79 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ListView(
               children: [
                 const SizedBox(height: 48),
-                Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
+                Image.asset('images/simplified.png', height: 100),
+                const SizedBox(height: 24),
+                const Text(
+                  'LOGIN',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333), // Dark color from the image
+                  ),
+                ),
                 const SizedBox(height: 48),
                 TextFormField(
                   validator: EmailValidator.validate,
                   controller: _emailController,
-                  decoration: const InputDecoration(label: Text('Email')),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.person),
+                    labelText: 'Email',
+                    labelStyle: const TextStyle(color: Color(0xFF333333)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
                 ),
+                const SizedBox(height: 16), // Added spacing between text fields
                 TextFormField(
                   validator: PasswordValidator.validate,
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(label: Text('Password')),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.lock),
+                    labelText: 'Password',
+                    labelStyle: const TextStyle(color: Color(0xFF333333)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF333333),
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 _errorCode != ""
@@ -88,26 +149,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [Text(_errorCode), const SizedBox(height: 24)],
                     )
                     : const SizedBox(height: 0),
-                OutlinedButton(
+                ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       signIn(); // hanya dijalankan jika semua validator lolos
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(
+                      0xFF352424,
+                    ), // Dark color from the image
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(
+                      double.infinity,
+                      50,
+                    ), // Full width, 50 height
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
                   child:
                       _isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Login'),
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('LOGIN'),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Don\'t have an account?'),
-                    TextButton(
-                      onPressed: navigateRegister,
-                      child: const Text('Register'),
+                const SizedBox(
+                  height: 16,
+                ), // Spacing before the "CREATE ACCOUNT?" text
+                TextButton(
+                  onPressed: navigateRegister,
+                  child: const Text(
+                    'CREATE ACCOUNT?',
+                    style: TextStyle(
+                      color: Color(0xFF333333), // Dark color from the image
+                      decoration: TextDecoration.underline,
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
