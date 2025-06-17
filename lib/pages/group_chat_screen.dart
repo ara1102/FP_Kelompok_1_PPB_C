@@ -54,6 +54,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     _currentUser = ChatUser(
       id: firebaseUser.uid,
       firstName: firebaseUser.displayName ?? firebaseUser.email ?? 'You',
+      customProperties: {}, // Initialize as empty map
     );
 
     _initializeGroupMembers();
@@ -64,7 +65,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     for (String memberId in widget.group.members) {
       try {
         String username = await _groupService.getUsernameByUserId(memberId);
-        members[memberId] = ChatUser(id: memberId, firstName: username);
+        String? profileImageUrl = await AuthService.instance.getImageBase64(
+          memberId,
+        );
+        members[memberId] = ChatUser(
+          id: memberId,
+          firstName: username,
+          customProperties: {'base64Image': profileImageUrl},
+        );
         _memberColors[memberId] =
             _generateRandomColor(); // Assign a random color
       } catch (e) {
@@ -157,7 +165,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     }
 
     return Scaffold(
-      appBar: GroupChatAppBar(groupName: widget.group.groupName),
+      appBar: GroupChatAppBar(
+        groupName: widget.group.groupName,
+        groupImage: widget.group.groupImage,
+      ),
       body: bodyContent,
     );
   }
