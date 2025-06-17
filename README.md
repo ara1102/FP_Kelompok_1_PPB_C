@@ -116,8 +116,8 @@
 
 | Nama             | Kontribusi                                                                 |
 |------------------|----------------------------------------------------------------------------|
-| Adhira Riyanti Amanda   |  |
-| Fatiya Izzati  |  |
-| Muhammad Ihsan Al Khwaritsmi     |            |
+| Adhira Riyanti Amanda   | Authentication, CRUD Group, profile picture Group, UI  |
+| Fatiya Izzati  | Authentication, CRUD Contact, CRUD Image, profile picture, UI |
+| Muhammad Ihsan Al Khwaritsmi     | CRUD ChatMessage (group and personal chat), Gemini Chat, UI|
 
 ---
