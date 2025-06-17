@@ -55,9 +55,18 @@
   - **View daftar member dan admin**
 
 ### 💬 Chat Room
-- 
-- 
-- 
+-  **Send Chat (Create ChatMessage)** dengan:
+    - **Input Text di textfield**
+    - **Tekan tombol Send**
+- **Edit Message** dengan:
+    - **Menekan salah satu ChatMessage dengan lama**
+    - **Lalu Input sesuai perbaikan yang dikehendaki**
+- **Delete Message** dengan:
+    - **menekan salah satu ChatMessage dengan lama**
+    - **tekan tombol delete pada dialog yang keluar**
+- **Menampilkan semua ChatMessage dari semua akun yang terhubung**
+    - **View nama sender**
+    - **View message yang telah diedit**
 
 ---
 
