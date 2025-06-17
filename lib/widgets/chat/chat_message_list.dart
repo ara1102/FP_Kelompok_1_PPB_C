@@ -77,6 +77,7 @@ class ChatMessageList extends StatelessWidget {
           onSend: onSend,
           messages: displayMessages,
           messageOptions: MessageOptions(
+            currentUserContainerColor: Color.fromARGB(1000, 255, 199, 96),
             showCurrentUserAvatar: true,
             showOtherUsersAvatar: true,
             showOtherUsersName: true,
@@ -95,16 +96,19 @@ class ChatMessageList extends StatelessWidget {
                   children: [
                     Text(
                       message.text,
-                      style: TextStyle(
-                        color: isMyMessage ? Colors.white : Colors.black,
-                      ),
+                      // style: TextStyle(
+                      //   color: isMyMessage ? Colors.white : Colors.black,
+                      // ),
                     ),
                     if (isEdited)
                       const Padding(
                         padding: EdgeInsets.only(top: 4.0),
                         child: Text(
                           'Edited',
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 90, 82, 82),
+                          ),
                         ),
                       ),
                   ],
