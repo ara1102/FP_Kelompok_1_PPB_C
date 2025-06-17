@@ -20,11 +20,24 @@
 
 ## ✨ Fitur-Fitur
 
+### 🔐 Authentication
+- **Register**: menggunakan email, username, dan password
+- **Login**: menggunakan email dan password
+- **Logout**
+- **Profile Picture** dengan:
+  - **Menambahkan foto profil** dengan mengambil dari gallery atau camera
+  - **Mengubah foto profil** dengan mengambil dari gallery atau camera
+  - **Menghapus foto profil**
 
 ### 👥 Contact
-- 
--
-- 
+- **Create/Add contact** dengan:
+  - **Tambah kontak**: pengguna memasukkan username dan nama kontak yang akan disimpan
+  - **Auto search**: jika username not found atau sudah disimpan maka akan gagal
+  - **Auto add**: contact pengguna yang tersimpan akan otomatis menampilkan roomchat walaupun belum menyimpan kontak penyimpan
+- **Edit contact**: mengubah nama kontak
+- **Delete contact** dengan:
+  - menghapus kontak, aksi ini akan sekaligus menghilangkan private room chat
+  - jika setelah menghapus kontak, pengguna menambahkan kontak kembali, maka roomchat lama akan kembali
 
 ### 👨‍👩‍👧‍👦 Group
 - **Create group** dengan:
@@ -35,7 +48,7 @@
   - **Update nama group dan profile picture group**
   - **Add dan remove member dan admin**
 - **Leave group**:
-    - Apabila user merupakan satu-satunya admin di group, sistem akan otomatis menunjuk admin baru dari member grou secara random.
+    - Apabila user merupakan satu-satunya admin di group, sistem akan otomatis menunjuk admin baru dari member group secara random.
 - **Delete group** (khusus admin)
 - **Halaman detail group**:
   - **View nama group dan profile picture group**
