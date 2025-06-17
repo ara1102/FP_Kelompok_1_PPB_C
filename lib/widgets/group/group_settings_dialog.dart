@@ -21,10 +21,12 @@ class GroupSettingsDialog extends StatelessWidget {
 
     void leaveGroup() async {
       await groupService.leaveGroup(groupId: group.id, userId: currentUserId);
-      Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('You left the group')));
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('You left the group')));
+      }
     }
 
     void deleteGroup() async {
@@ -54,20 +56,28 @@ class GroupSettingsDialog extends StatelessWidget {
           groupId: group.id,
           userId: currentUserId,
         );
-        Navigator.pop(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Group deleted')));
+        if (context.mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Group deleted')));
+        }
       }
     }
 
     void openEditDialog() async {
-      Navigator.pop(context); // Close the settings dialog
+      if (context.mounted) {
+        Navigator.pop(context); // Close the settings dialog
+      }
 
       if (!group.admins.contains(currentUserId)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Only group admins can edit the group')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Only group admins can edit the group'),
+            ),
+          );
+        }
         return;
       }
 
@@ -90,13 +100,17 @@ class GroupSettingsDialog extends StatelessWidget {
                     newMembers: updatedMembers,
                     newAdmins: updatedAdmins,
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Group "$updatedName" updated!')),
-                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Group "$updatedName" updated!')),
+                    );
+                  }
                 } catch (e) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Update failed: $e')));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Update failed: $e')),
+                    );
+                  }
                 }
               },
             ),
@@ -150,13 +164,15 @@ class GroupSettingsDialog extends StatelessWidget {
                   isAdmin
                       ? openEditDialog
                       : () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Only group admins can edit the group',
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Only group admins can edit the group',
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
             ),
 
@@ -210,13 +226,15 @@ class GroupSettingsDialog extends StatelessWidget {
                   isAdmin
                       ? deleteGroup
                       : () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Only group admins can delete the group',
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Only group admins can delete the group',
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
             ),
 

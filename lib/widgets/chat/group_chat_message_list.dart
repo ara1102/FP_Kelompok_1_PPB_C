@@ -85,6 +85,8 @@ class GroupChatMessageList extends StatelessWidget {
           onSend: onSend,
           messages: displayMessages,
           messageOptions: MessageOptions(
+            currentUserContainerColor: Color.fromARGB(1000, 255, 199, 96),
+
             showCurrentUserAvatar: true,
             showOtherUsersAvatar: true,
             showOtherUsersName: false,
@@ -117,9 +119,9 @@ class GroupChatMessageList extends StatelessWidget {
                       ),
                     Text(
                       message.text,
-                      style: TextStyle(
-                        color: isMyMessage ? Colors.white : Colors.black,
-                      ),
+                      // style: TextStyle(
+                      //   color: isMyMessage ? Colors.white : Colors.black,
+                      // ),
                     ),
                     if (isEdited)
                       const Padding(
