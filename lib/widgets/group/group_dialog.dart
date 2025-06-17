@@ -576,7 +576,7 @@ class _GroupDialogState extends State<GroupDialog> {
                                               vertical: 6,
                                             ),
                                         leading:
-                                            (contact.profileImage != null ||
+                                            (contact.profileImage != null &&
                                                     !contact
                                                         .profileImage!
                                                         .isEmpty)
@@ -595,10 +595,6 @@ class _GroupDialogState extends State<GroupDialog> {
                                                       'Error loading profile image: $exception',
                                                     );
                                                   },
-                                                  child: Icon(
-                                                    Icons.person,
-                                                    color: Color(0xFFF4A44A),
-                                                  ),
                                                 )
                                                 : CircleAvatar(
                                                   backgroundColor: const Color(

@@ -135,16 +135,22 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
                             localLoading
                                 ? null
                                 : () => _pickImage(ImageSource.gallery),
-                        icon: const Icon(Icons.photo),
-                        label: const Text('Galeri'),
+                        icon: const Icon(Icons.photo, color: Colors.black),
+                        label: const Text(
+                          'Galeri',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                       ElevatedButton.icon(
                         onPressed:
                             localLoading
                                 ? null
                                 : () => _pickImage(ImageSource.camera),
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text('Kamera'),
+                        icon: const Icon(Icons.camera_alt, color: Colors.black),
+                        label: const Text(
+                          'Kamera',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     ],
                   ),
@@ -166,9 +172,15 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Batal'),
+                  child: const Text(
+                    'Batal',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    overlayColor: Color(0xFFF4A44A),
+                  ),
                   onPressed:
                       localLoading
                           ? null
@@ -198,7 +210,10 @@ class _ProfileImageFormState extends State<ProfileImageForm> {
                             Navigator.of(context).pop();
                             _showSnackBar('Perubahan disimpan');
                           },
-                  child: const Text('Simpan'),
+                  child: const Text(
+                    'Simpan',
+                    style: TextStyle(color: Color(0xFFF4A44A)),
+                  ),
                 ),
               ],
             );
